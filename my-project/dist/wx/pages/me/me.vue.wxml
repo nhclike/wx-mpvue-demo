@@ -1,0 +1,5 @@
+<template name="7da69fdd">
+  <view class="_div data-v-6cb172a0">
+    <view class="_h1 data-v-6cb172a0">{{msg}}</view>
+  </view>
+</template>
