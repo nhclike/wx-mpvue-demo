@@ -3,13 +3,13 @@ import config from './config'
 
 // http get工具函数 获取数据
 export function get (url, data) {
-  return request(url,'GET', data)
+  return request(url, 'GET', data)
 }
 export function post (url, data) {
-  return request(url,'POST', data)
+  return request(url, 'POST', data)
 }
 
-function request(url,method,data,header={}){
+function request (url, method, data, header = {}) {
   return new Promise((resolve, reject) => {
     wx.request({
       data,
@@ -20,7 +20,7 @@ function request(url,method,data,header={}){
         if (res.data.code === 0) {
           resolve(res.data.data)
         } else {
-          showModal('失败',res.data.data.msg)
+          showModal('失败', res.data.data.msg)
           reject(res.data)
         }
       }
@@ -28,11 +28,11 @@ function request(url,method,data,header={}){
   })
 }
 
-export function showModal(title, content){
+export function showModal (title, content) {
   wx.showModal({
     title,
     content,
-    showCancel:false
+    showCancel: false
   })
 }
 export function showSuccess (text) {

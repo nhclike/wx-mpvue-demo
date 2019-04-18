@@ -14,8 +14,8 @@ if (typeof __g == 'number') __g = global; // eslint-disable-line no-undef
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var store = __webpack_require__(29)('wks');
-var uid = __webpack_require__(30);
+var store = __webpack_require__(31)('wks');
+var uid = __webpack_require__(32);
 var Symbol = __webpack_require__(0).Symbol;
 var USE_SYMBOL = typeof Symbol == 'function';
 
@@ -29,6 +29,103 @@ $exports.store = store;
 
 /***/ }),
 /* 2 */
+/***/ (function(module, exports) {
+
+/* globals __VUE_SSR_CONTEXT__ */
+
+// this module is a runtime utility for cleaner component module output and will
+// be included in the final webpack user bundle
+
+module.exports = function normalizeComponent (
+  rawScriptExports,
+  compiledTemplate,
+  injectStyles,
+  scopeId,
+  moduleIdentifier /* server only */
+) {
+  var esModule
+  var scriptExports = rawScriptExports = rawScriptExports || {}
+
+  // ES6 modules interop
+  var type = typeof rawScriptExports.default
+  if (type === 'object' || type === 'function') {
+    esModule = rawScriptExports
+    scriptExports = rawScriptExports.default
+  }
+
+  // Vue.extend constructor export interop
+  var options = typeof scriptExports === 'function'
+    ? scriptExports.options
+    : scriptExports
+
+  // render functions
+  if (compiledTemplate) {
+    options.render = compiledTemplate.render
+    options.staticRenderFns = compiledTemplate.staticRenderFns
+  }
+
+  // scopedId
+  if (scopeId) {
+    options._scopeId = scopeId
+  }
+
+  var hook
+  if (moduleIdentifier) { // server build
+    hook = function (context) {
+      // 2.3 injection
+      context =
+        context || // cached call
+        (this.$vnode && this.$vnode.ssrContext) || // stateful
+        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional
+      // 2.2 with runInNewContext: true
+      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
+        context = __VUE_SSR_CONTEXT__
+      }
+      // inject component styles
+      if (injectStyles) {
+        injectStyles.call(this, context)
+      }
+      // register component module identifier for async chunk inferrence
+      if (context && context._registeredComponents) {
+        context._registeredComponents.add(moduleIdentifier)
+      }
+    }
+    // used by ssr in case component is cached and beforeCreate
+    // never gets called
+    options._ssrRegister = hook
+  } else if (injectStyles) {
+    hook = injectStyles
+  }
+
+  if (hook) {
+    var functional = options.functional
+    var existing = functional
+      ? options.render
+      : options.beforeCreate
+    if (!functional) {
+      // inject component registration as beforeCreate hook
+      options.beforeCreate = existing
+        ? [].concat(existing, hook)
+        : [hook]
+    } else {
+      // register for functioal component in vue file
+      options.render = function renderWithStyleInjection (h, context) {
+        hook.call(context)
+        return existing(h, context)
+      }
+    }
+  }
+
+  return {
+    esModule: esModule,
+    exports: scriptExports,
+    options: options
+  }
+}
+
+
+/***/ }),
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {// fix env
@@ -5895,104 +5992,7 @@ return Vue$3;
 
 })));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(40)))
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports) {
-
-/* globals __VUE_SSR_CONTEXT__ */
-
-// this module is a runtime utility for cleaner component module output and will
-// be included in the final webpack user bundle
-
-module.exports = function normalizeComponent (
-  rawScriptExports,
-  compiledTemplate,
-  injectStyles,
-  scopeId,
-  moduleIdentifier /* server only */
-) {
-  var esModule
-  var scriptExports = rawScriptExports = rawScriptExports || {}
-
-  // ES6 modules interop
-  var type = typeof rawScriptExports.default
-  if (type === 'object' || type === 'function') {
-    esModule = rawScriptExports
-    scriptExports = rawScriptExports.default
-  }
-
-  // Vue.extend constructor export interop
-  var options = typeof scriptExports === 'function'
-    ? scriptExports.options
-    : scriptExports
-
-  // render functions
-  if (compiledTemplate) {
-    options.render = compiledTemplate.render
-    options.staticRenderFns = compiledTemplate.staticRenderFns
-  }
-
-  // scopedId
-  if (scopeId) {
-    options._scopeId = scopeId
-  }
-
-  var hook
-  if (moduleIdentifier) { // server build
-    hook = function (context) {
-      // 2.3 injection
-      context =
-        context || // cached call
-        (this.$vnode && this.$vnode.ssrContext) || // stateful
-        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional
-      // 2.2 with runInNewContext: true
-      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
-        context = __VUE_SSR_CONTEXT__
-      }
-      // inject component styles
-      if (injectStyles) {
-        injectStyles.call(this, context)
-      }
-      // register component module identifier for async chunk inferrence
-      if (context && context._registeredComponents) {
-        context._registeredComponents.add(moduleIdentifier)
-      }
-    }
-    // used by ssr in case component is cached and beforeCreate
-    // never gets called
-    options._ssrRegister = hook
-  } else if (injectStyles) {
-    hook = injectStyles
-  }
-
-  if (hook) {
-    var functional = options.functional
-    var existing = functional
-      ? options.render
-      : options.beforeCreate
-    if (!functional) {
-      // inject component registration as beforeCreate hook
-      options.beforeCreate = existing
-        ? [].concat(existing, hook)
-        : [hook]
-    } else {
-      // register for functioal component in vue file
-      options.render = function renderWithStyleInjection (h, context) {
-        hook.call(context)
-        return existing(h, context)
-      }
-    }
-  }
-
-  return {
-    esModule: esModule,
-    exports: scriptExports,
-    options: options
-  }
-}
-
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(46)))
 
 /***/ }),
 /* 4 */
@@ -6018,7 +6018,7 @@ module.exports = function (it) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var dP = __webpack_require__(13);
-var createDesc = __webpack_require__(27);
+var createDesc = __webpack_require__(29);
 module.exports = __webpack_require__(8) ? function (object, key, value) {
   return dP.f(object, key, createDesc(1, value));
 } : function (object, key, value) {
@@ -6041,7 +6041,7 @@ module.exports = function (it) {
 /***/ (function(module, exports, __webpack_require__) {
 
 // Thank's IE8 for his funny defineProperty
-module.exports = !__webpack_require__(26)(function () {
+module.exports = !__webpack_require__(28)(function () {
   return Object.defineProperty({}, 'a', { get: function () { return 7; } }).a != 7;
 });
 
@@ -6162,8 +6162,8 @@ module.exports = function (it) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var anObject = __webpack_require__(5);
-var IE8_DOM_DEFINE = __webpack_require__(56);
-var toPrimitive = __webpack_require__(57);
+var IE8_DOM_DEFINE = __webpack_require__(64);
+var toPrimitive = __webpack_require__(65);
 var dP = Object.defineProperty;
 
 exports.f = __webpack_require__(8) ? Object.defineProperty : function defineProperty(O, P, Attributes) {
@@ -6204,6 +6204,31 @@ module.exports = function (it) {
 /* 16 */
 /***/ (function(module, exports) {
 
+module.exports = {
+    WX_HEADER_CODE: 'X-WX-Code',
+    WX_HEADER_ENCRYPTED_DATA: 'X-WX-Encrypted-Data',
+    WX_HEADER_IV: 'X-WX-IV',
+    WX_HEADER_ID: 'X-WX-Id',
+    WX_HEADER_SKEY: 'X-WX-Skey',
+
+    WX_SESSION_MAGIC_ID: 'F2C224D4-2BCE-4C64-AF9F-A6D872000D1A',
+
+    ERR_INVALID_PARAMS: 'ERR_INVALID_PARAMS',
+
+    ERR_WX_LOGIN_FAILED: 'ERR_WX_LOGIN_FAILED',
+    ERR_WX_GET_USER_INFO: 'ERR_WX_GET_USER_INFO',
+    ERR_LOGIN_TIMEOUT: 'ERR_LOGIN_TIMEOUT',
+    ERR_LOGIN_FAILED: 'ERR_LOGIN_FAILED',
+    ERR_LOGIN_SESSION_NOT_RECEIVED: 'ERR_LOGIN_MISSING_SESSION',
+
+    ERR_SESSION_INVALID: 'ERR_SESSION_INVALID',
+    ERR_CHECK_LOGIN_FAILED: 'ERR_CHECK_LOGIN_FAILED',
+};
+
+/***/ }),
+/* 17 */
+/***/ (function(module, exports) {
+
 // 7.1.4 ToInteger
 var ceil = Math.ceil;
 var floor = Math.floor;
@@ -6213,7 +6238,7 @@ module.exports = function (it) {
 
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports) {
 
 // 7.2.1 RequireObjectCoercible(argument)
@@ -6224,14 +6249,14 @@ module.exports = function (it) {
 
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports) {
 
 module.exports = true;
 
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(7);
@@ -6244,30 +6269,30 @@ module.exports = function (it) {
 
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // to indexed object, toObject with fallback for non-array-like ES3 strings
-var IObject = __webpack_require__(64);
-var defined = __webpack_require__(17);
+var IObject = __webpack_require__(72);
+var defined = __webpack_require__(18);
 module.exports = function (it) {
   return IObject(defined(it));
 };
 
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var shared = __webpack_require__(29)('keys');
-var uid = __webpack_require__(30);
+var shared = __webpack_require__(31)('keys');
+var uid = __webpack_require__(32);
 module.exports = function (key) {
   return shared[key] || (shared[key] = uid(key));
 };
 
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var def = __webpack_require__(13).f;
@@ -6280,7 +6305,7 @@ module.exports = function (it, tag, stat) {
 
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6305,25 +6330,48 @@ module.exports.f = function (C) {
 
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = { "default": __webpack_require__(52), __esModule: true };
+var constants = __webpack_require__(16);
+var SESSION_KEY = 'weapp_session_' + constants.WX_SESSION_MAGIC_ID;
+
+var Session = {
+    get: function () {
+        return wx.getStorageSync(SESSION_KEY) || null;
+    },
+
+    set: function (session) {
+        wx.setStorageSync(SESSION_KEY, session);
+    },
+
+    clear: function () {
+        wx.removeStorageSync(SESSION_KEY);
+    },
+};
+
+module.exports = Session;
 
 /***/ }),
-/* 25 */
+/* 26 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = { "default": __webpack_require__(60), __esModule: true };
+
+/***/ }),
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var LIBRARY = __webpack_require__(18);
+var LIBRARY = __webpack_require__(19);
 var $export = __webpack_require__(10);
-var redefine = __webpack_require__(58);
+var redefine = __webpack_require__(66);
 var hide = __webpack_require__(6);
 var Iterators = __webpack_require__(9);
-var $iterCreate = __webpack_require__(59);
-var setToStringTag = __webpack_require__(22);
-var getPrototypeOf = __webpack_require__(67);
+var $iterCreate = __webpack_require__(67);
+var setToStringTag = __webpack_require__(23);
+var getPrototypeOf = __webpack_require__(75);
 var ITERATOR = __webpack_require__(1)('iterator');
 var BUGGY = !([].keys && 'next' in [].keys()); // Safari has buggy iterators w/o `next`
 var FF_ITERATOR = '@@iterator';
@@ -6387,7 +6435,7 @@ module.exports = function (Base, NAME, Constructor, next, DEFAULT, IS_SET, FORCE
 
 
 /***/ }),
-/* 26 */
+/* 28 */
 /***/ (function(module, exports) {
 
 module.exports = function (exec) {
@@ -6400,7 +6448,7 @@ module.exports = function (exec) {
 
 
 /***/ }),
-/* 27 */
+/* 29 */
 /***/ (function(module, exports) {
 
 module.exports = function (bitmap, value) {
@@ -6414,11 +6462,11 @@ module.exports = function (bitmap, value) {
 
 
 /***/ }),
-/* 28 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 7.1.15 ToLength
-var toInteger = __webpack_require__(16);
+var toInteger = __webpack_require__(17);
 var min = Math.min;
 module.exports = function (it) {
   return it > 0 ? min(toInteger(it), 0x1fffffffffffff) : 0; // pow(2, 53) - 1 == 9007199254740991
@@ -6426,7 +6474,7 @@ module.exports = function (it) {
 
 
 /***/ }),
-/* 29 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var core = __webpack_require__(4);
@@ -6438,13 +6486,13 @@ var store = global[SHARED] || (global[SHARED] = {});
   return store[key] || (store[key] = value !== undefined ? value : {});
 })('versions', []).push({
   version: core.version,
-  mode: __webpack_require__(18) ? 'pure' : 'global',
+  mode: __webpack_require__(19) ? 'pure' : 'global',
   copyright: '© 2019 Denis Pushkarev (zloirock.ru)'
 });
 
 
 /***/ }),
-/* 30 */
+/* 32 */
 /***/ (function(module, exports) {
 
 var id = 0;
@@ -6455,7 +6503,7 @@ module.exports = function (key) {
 
 
 /***/ }),
-/* 31 */
+/* 33 */
 /***/ (function(module, exports) {
 
 // IE 8- don't enum bug keys
@@ -6465,7 +6513,7 @@ module.exports = (
 
 
 /***/ }),
-/* 32 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var document = __webpack_require__(0).document;
@@ -6473,7 +6521,7 @@ module.exports = document && document.documentElement;
 
 
 /***/ }),
-/* 33 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // getting tag from 19.1.3.6 Object.prototype.toString()
@@ -6502,7 +6550,7 @@ module.exports = function (it) {
 
 
 /***/ }),
-/* 34 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 7.3.20 SpeciesConstructor(O, defaultConstructor)
@@ -6517,13 +6565,13 @@ module.exports = function (O, D) {
 
 
 /***/ }),
-/* 35 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var ctx = __webpack_require__(11);
-var invoke = __webpack_require__(79);
-var html = __webpack_require__(32);
-var cel = __webpack_require__(19);
+var invoke = __webpack_require__(87);
+var html = __webpack_require__(34);
+var cel = __webpack_require__(20);
 var global = __webpack_require__(0);
 var process = global.process;
 var setTask = global.setImmediate;
@@ -6607,7 +6655,7 @@ module.exports = {
 
 
 /***/ }),
-/* 36 */
+/* 38 */
 /***/ (function(module, exports) {
 
 module.exports = function (exec) {
@@ -6620,12 +6668,12 @@ module.exports = function (exec) {
 
 
 /***/ }),
-/* 37 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var anObject = __webpack_require__(5);
 var isObject = __webpack_require__(7);
-var newPromiseCapability = __webpack_require__(23);
+var newPromiseCapability = __webpack_require__(24);
 
 module.exports = function (C, x) {
   anObject(C);
@@ -6638,18 +6686,93 @@ module.exports = function (C, x) {
 
 
 /***/ }),
-/* 38 */
+/* 40 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_mpvue_loader_lib_selector_type_script_index_0_card_vue__ = __webpack_require__(107);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__node_modules_mpvue_loader_lib_template_compiler_index_id_data_v_1fb80d35_hasScoped_false_transformToRequire_video_src_source_src_img_src_image_xlink_href_fileExt_template_wxml_script_js_style_wxss_platform_wx_node_modules_mpvue_loader_lib_selector_type_template_index_0_card_vue__ = __webpack_require__(108);
+/* harmony export (immutable) */ __webpack_exports__["a"] = get;
+/* unused harmony export post */
+/* unused harmony export showModal */
+/* harmony export (immutable) */ __webpack_exports__["b"] = showSuccess;
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_promise__ = __webpack_require__(26);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_promise___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_promise__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__config__ = __webpack_require__(41);
+
+// 工具函数库
+
+
+// http get工具函数 获取数据
+function get(url, data) {
+  return request(url, 'GET', data);
+}
+function post(url, data) {
+  return request(url, 'POST', data);
+}
+
+function request(url, method, data) {
+  var header = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+
+  return new __WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_promise___default.a(function (resolve, reject) {
+    wx.request({
+      data: data,
+      method: method,
+      header: header,
+      url: __WEBPACK_IMPORTED_MODULE_1__config__["a" /* default */].host + url,
+      success: function success(res) {
+        if (res.data.code === 0) {
+          resolve(res.data.data);
+        } else {
+          showModal('失败', res.data.data.msg);
+          reject(res.data);
+        }
+      }
+    });
+  });
+}
+
+function showModal(title, content) {
+  wx.showModal({
+    title: title,
+    content: content,
+    showCancel: false
+  });
+}
+function showSuccess(text) {
+  wx.showToast({
+    title: text,
+    icon: 'success'
+  });
+}
+
+/***/ }),
+/* 41 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+// 配置项
+
+var host = 'http://localhost:5757';
+
+var config = {
+  host: host,
+  loginUrl: host + '/weapp/login',
+  userUrl: host + '/weapp/user'
+};
+/* harmony default export */ __webpack_exports__["a"] = (config);
+
+/***/ }),
+/* 42 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_mpvue_loader_lib_selector_type_script_index_0_card_vue__ = __webpack_require__(113);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__node_modules_mpvue_loader_lib_template_compiler_index_id_data_v_1fb80d35_hasScoped_false_transformToRequire_video_src_source_src_img_src_image_xlink_href_fileExt_template_wxml_script_js_style_wxss_platform_wx_node_modules_mpvue_loader_lib_selector_type_template_index_0_card_vue__ = __webpack_require__(114);
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(106)
+  __webpack_require__(112)
 }
-var normalizeComponent = __webpack_require__(3)
+var normalizeComponent = __webpack_require__(2)
 /* script */
 
 /* template */
@@ -6691,8 +6814,305 @@ if (false) {(function () {
 
 
 /***/ }),
-/* 39 */,
-/* 40 */
+/* 43 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * README!!!
+ * 为了兼容微信修改的登录逻辑
+ * 这里对登录的 SDK 进行重构
+ * 微信公告：https://developers.weixin.qq.com/blogdetail?action=get_post_info&lang=zh_CN&token=&docid=0000a26e1aca6012e896a517556c01
+ */
+var constants = __webpack_require__(16);
+var Session = __webpack_require__(25);
+
+/**
+ * 微信登录，获取 code 和 encryptData
+ */
+function getWxLoginResult (cb) {
+    wx.login({
+        success (loginResult) {
+            wx.getUserInfo({
+                success (userResult) {
+                    cb(null, {
+                        code: loginResult.code,
+                        encryptedData: userResult.encryptedData,
+                        iv: userResult.iv,
+                        userInfo: userResult.userInfo
+                    })
+                },
+                fail (userError) {
+                    cb(new Error('获取微信用户信息失败，请检查网络状态'), null)
+                }
+            });
+        },
+        fail (loginError) {
+            cb(new Error('微信登录失败，请检查网络状态'), null)
+        }
+    })
+}
+
+const noop = function noop() {}
+const defaultOptions = {
+    method: 'GET',
+    success: noop,
+    fail: noop,
+    loginUrl: null,
+}
+
+/**
+ * @method
+ * 进行服务器登录，以获得登录会话
+ * 受限于微信的限制，本函数需要在 <button open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo"></button> 的回调函数中调用
+ * 需要先使用 <button> 弹窗，让用户接受授权，然后再安全调用 wx.getUserInfo 获取用户信息
+ *
+ * @param {Object}   opts           登录配置
+ * @param {string}   opts.loginUrl  登录使用的 URL，服务器应该在这个 URL 上处理登录请求，建议配合服务端 SDK 使用
+ * @param {string}   [opts.method]  可选。请求使用的 HTTP 方法，默认为 GET
+ * @param {Function} [opts.success] 可选。登录成功后的回调函数，参数 userInfo 微信用户信息
+ * @param {Function} [opts.fail]    可选。登录失败后的回调函数，参数 error 错误信息
+ */
+function login (opts) {
+    opts = Object.assign({}, defaultOptions, opts)
+
+    if (!opts.loginUrl) {
+        return opts.fail(new Error('登录错误：缺少登录地址，请通过 setLoginUrl() 方法设置登录地址'))
+    }
+
+    getWxLoginResult((err, loginResult) => {
+        if (err) {
+            return opts.fail(err)
+        }
+
+        // 构造请求头，包含 code、encryptedData 和 iv
+        const header = {
+            [constants.WX_HEADER_CODE]: loginResult.code,
+            [constants.WX_HEADER_ENCRYPTED_DATA]: loginResult.encryptedData,
+            [constants.WX_HEADER_IV]: loginResult.iv
+        }
+
+        // 请求服务器登录地址，获得会话信息
+        wx.request({
+            url: opts.loginUrl,
+            header: header,
+            method: opts.method,
+            success (result) {
+                const data = result.data;
+
+                if (!data || data.code !== 0 || !data.data || !data.data.skey) {
+                    return opts.fail(new Error(`响应错误，${JSON.stringify(data)}`))
+                }
+
+                const res = data.data
+
+                if (!res || !res.userinfo) {
+                    return opts.fail(new Error(`登录失败(${data.error})：${data.message}`))
+                }
+
+                // 成功地响应会话信息
+                Session.set(res)
+                opts.success(res.userinfo)
+            },
+            fail (err) {
+                console.error('登录失败，可能是网络错误或者服务器发生异常')
+                opts.fail(err)
+            }
+        });
+    })
+}
+
+/**
+ * @method
+ * 只通过 wx.login 的 code 进行登录
+ * 已经登录过的用户，只需要用 code 换取 openid，从数据库中查询出来即可
+ * 无需每次都使用 wx.getUserInfo 去获取用户信息
+ * 后端 Wafer SDK 需配合 1.4.x 及以上版本
+ * 
+ * @param {Object}   opts           登录配置
+ * @param {string}   opts.loginUrl  登录使用的 URL，服务器应该在这个 URL 上处理登录请求，建议配合服务端 SDK 使用
+ * @param {string}   [opts.method]  可选。请求使用的 HTTP 方法，默认为 GET
+ * @param {Function} [opts.success] 可选。登录成功后的回调函数，参数 userInfo 微信用户信息
+ * @param {Function} [opts.fail]    可选。登录失败后的回调函数，参数 error 错误信息
+ */
+function loginWithCode (opts) {
+    opts = Object.assign({}, defaultOptions, opts)
+
+    if (!opts.loginUrl) {
+        return opts.fail(new Error('登录错误：缺少登录地址，请通过 setLoginUrl() 方法设置登录地址'))
+    }
+
+    wx.login({
+        success (loginResult) {
+            // 构造请求头，包含 code、encryptedData 和 iv
+            const header = {
+                [constants.WX_HEADER_CODE]: loginResult.code
+            }
+    
+            // 请求服务器登录地址，获得会话信息
+            wx.request({
+                url: opts.loginUrl,
+                header: header,
+                method: opts.method,
+                success (result) {
+                    const data = result.data;
+    
+                    if (!data || data.code !== 0 || !data.data || !data.data.skey) {
+                        return opts.fail(new Error(`用户未登录过，请先使用 login() 登录`))
+                    }
+    
+                    const res = data.data
+    
+                    if (!res || !res.userinfo) {
+                        return opts.fail(new Error(`登录失败(${data.error})：${data.message}`))
+                    }
+    
+                    // 成功地响应会话信息
+                    Session.set(res)
+                    opts.success(res.userinfo)
+                },
+                fail (err) {
+                    console.error('登录失败，可能是网络错误或者服务器发生异常')
+                    opts.fail(err)
+                }
+            });
+        }
+    })
+}
+
+function setLoginUrl (loginUrl) {
+    defaultOptions.loginUrl = loginUrl;
+}
+
+module.exports = { login, setLoginUrl, loginWithCode }
+
+
+/***/ }),
+/* 44 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var constants = __webpack_require__(16);
+var utils = __webpack_require__(131);
+var Session = __webpack_require__(25);
+var loginLib = __webpack_require__(43);
+
+var noop = function noop() {};
+
+var buildAuthHeader = function buildAuthHeader(session) {
+    var header = {};
+
+    if (session) {
+        header[constants.WX_HEADER_SKEY] = session;
+    }
+
+    return header;
+};
+
+/***
+ * @class
+ * 表示请求过程中发生的异常
+ */
+var RequestError = (function () {
+    function RequestError(type, message) {
+        Error.call(this, message);
+        this.type = type;
+        this.message = message;
+    }
+
+    RequestError.prototype = new Error();
+    RequestError.prototype.constructor = RequestError;
+
+    return RequestError;
+})();
+
+function request(options) {
+    if (typeof options !== 'object') {
+        var message = '请求传参应为 object 类型，但实际传了 ' + (typeof options) + ' 类型';
+        throw new RequestError(constants.ERR_INVALID_PARAMS, message);
+    }
+
+    var requireLogin = options.login;
+    var success = options.success || noop;
+    var fail = options.fail || noop;
+    var complete = options.complete || noop;
+    var originHeader = options.header || {};
+
+    // 成功回调
+    var callSuccess = function () {
+        success.apply(null, arguments);
+        complete.apply(null, arguments);
+    };
+
+    // 失败回调
+    var callFail = function (error) {
+        fail.call(null, error);
+        complete.call(null, error);
+    };
+
+    // 是否已经进行过重试
+    var hasRetried = false;
+
+    if (requireLogin) {
+        doRequestWithLogin();
+    } else {
+        doRequest();
+    }
+
+    // 登录后再请求
+    function doRequestWithLogin() {
+        loginLib.loginWithCode({ success: doRequest, fail: callFail });
+    }
+
+    // 实际进行请求的方法
+    function doRequest() {
+        var authHeader = {}
+
+        var session = Session.get();
+    
+        if (session) {
+            authHeader = buildAuthHeader(session.skey);
+        }
+
+        wx.request(utils.extend({}, options, {
+            header: utils.extend({}, originHeader, authHeader),
+
+            success: function (response) {
+                var data = response.data;
+
+                var error, message;
+                if ((data && data.code === -1) || response.statusCode === 401) {
+                    Session.clear();
+                    // 如果是登录态无效，并且还没重试过，会尝试登录后刷新凭据重新请求
+                    if (!hasRetried) {
+                        hasRetried = true;
+                        doRequestWithLogin();
+                        return;
+                    }
+
+                    message = '登录态已过期';
+                    error = new RequestError(data.error, message);
+
+                    callFail(error);
+                    return;
+                } else {
+                    callSuccess.apply(null, arguments);
+                }
+            },
+
+            fail: callFail,
+            complete: noop,
+        }));
+    };
+
+};
+
+module.exports = {
+    RequestError: RequestError,
+    request: request,
+};
+
+/***/ }),
+/* 45 */,
+/* 46 */
 /***/ (function(module, exports) {
 
 var g;
@@ -6717,21 +7137,23 @@ module.exports = g;
 
 
 /***/ }),
-/* 41 */,
-/* 42 */,
-/* 43 */,
-/* 44 */,
-/* 45 */,
-/* 46 */,
 /* 47 */,
-/* 48 */
+/* 48 */,
+/* 49 */,
+/* 50 */,
+/* 51 */,
+/* 52 */,
+/* 53 */,
+/* 54 */,
+/* 55 */,
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(49);
+module.exports = __webpack_require__(57);
 
 
 /***/ }),
-/* 49 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -6756,7 +7178,7 @@ var oldRuntime = hadRuntime && g.regeneratorRuntime;
 // Force reevalutation of runtime.js.
 g.regeneratorRuntime = undefined;
 
-module.exports = __webpack_require__(50);
+module.exports = __webpack_require__(58);
 
 if (hadRuntime) {
   // Restore the original runtime.
@@ -6772,7 +7194,7 @@ if (hadRuntime) {
 
 
 /***/ }),
-/* 50 */
+/* 58 */
 /***/ (function(module, exports) {
 
 /**
@@ -7505,7 +7927,7 @@ if (hadRuntime) {
 
 
 /***/ }),
-/* 51 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7513,7 +7935,7 @@ if (hadRuntime) {
 
 exports.__esModule = true;
 
-var _promise = __webpack_require__(24);
+var _promise = __webpack_require__(26);
 
 var _promise2 = _interopRequireDefault(_promise);
 
@@ -7549,34 +7971,34 @@ exports.default = function (fn) {
 };
 
 /***/ }),
-/* 52 */
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(53);
-__webpack_require__(54);
-__webpack_require__(69);
-__webpack_require__(73);
-__webpack_require__(85);
-__webpack_require__(86);
+__webpack_require__(61);
+__webpack_require__(62);
+__webpack_require__(77);
+__webpack_require__(81);
+__webpack_require__(93);
+__webpack_require__(94);
 module.exports = __webpack_require__(4).Promise;
 
 
 /***/ }),
-/* 53 */
+/* 61 */
 /***/ (function(module, exports) {
 
 
 
 /***/ }),
-/* 54 */
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var $at = __webpack_require__(55)(true);
+var $at = __webpack_require__(63)(true);
 
 // 21.1.3.27 String.prototype[@@iterator]()
-__webpack_require__(25)(String, 'String', function (iterated) {
+__webpack_require__(27)(String, 'String', function (iterated) {
   this._t = String(iterated); // target
   this._i = 0;                // next index
 // 21.1.5.2.1 %StringIteratorPrototype%.next()
@@ -7592,11 +8014,11 @@ __webpack_require__(25)(String, 'String', function (iterated) {
 
 
 /***/ }),
-/* 55 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var toInteger = __webpack_require__(16);
-var defined = __webpack_require__(17);
+var toInteger = __webpack_require__(17);
+var defined = __webpack_require__(18);
 // true  -> String#at
 // false -> String#codePointAt
 module.exports = function (TO_STRING) {
@@ -7615,16 +8037,16 @@ module.exports = function (TO_STRING) {
 
 
 /***/ }),
-/* 56 */
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = !__webpack_require__(8) && !__webpack_require__(26)(function () {
-  return Object.defineProperty(__webpack_require__(19)('div'), 'a', { get: function () { return 7; } }).a != 7;
+module.exports = !__webpack_require__(8) && !__webpack_require__(28)(function () {
+  return Object.defineProperty(__webpack_require__(20)('div'), 'a', { get: function () { return 7; } }).a != 7;
 });
 
 
 /***/ }),
-/* 57 */
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 7.1.1 ToPrimitive(input [, PreferredType])
@@ -7642,21 +8064,21 @@ module.exports = function (it, S) {
 
 
 /***/ }),
-/* 58 */
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__(6);
 
 
 /***/ }),
-/* 59 */
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var create = __webpack_require__(60);
-var descriptor = __webpack_require__(27);
-var setToStringTag = __webpack_require__(22);
+var create = __webpack_require__(68);
+var descriptor = __webpack_require__(29);
+var setToStringTag = __webpack_require__(23);
 var IteratorPrototype = {};
 
 // 25.1.2.1.1 %IteratorPrototype%[@@iterator]()
@@ -7669,27 +8091,27 @@ module.exports = function (Constructor, NAME, next) {
 
 
 /***/ }),
-/* 60 */
+/* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
 var anObject = __webpack_require__(5);
-var dPs = __webpack_require__(61);
-var enumBugKeys = __webpack_require__(31);
-var IE_PROTO = __webpack_require__(21)('IE_PROTO');
+var dPs = __webpack_require__(69);
+var enumBugKeys = __webpack_require__(33);
+var IE_PROTO = __webpack_require__(22)('IE_PROTO');
 var Empty = function () { /* empty */ };
 var PROTOTYPE = 'prototype';
 
 // Create object with fake `null` prototype: use iframe Object with cleared prototype
 var createDict = function () {
   // Thrash, waste and sodomy: IE GC bug
-  var iframe = __webpack_require__(19)('iframe');
+  var iframe = __webpack_require__(20)('iframe');
   var i = enumBugKeys.length;
   var lt = '<';
   var gt = '>';
   var iframeDocument;
   iframe.style.display = 'none';
-  __webpack_require__(32).appendChild(iframe);
+  __webpack_require__(34).appendChild(iframe);
   iframe.src = 'javascript:'; // eslint-disable-line no-script-url
   // createDict = iframe.contentWindow.Object;
   // html.removeChild(iframe);
@@ -7716,12 +8138,12 @@ module.exports = Object.create || function create(O, Properties) {
 
 
 /***/ }),
-/* 61 */
+/* 69 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var dP = __webpack_require__(13);
 var anObject = __webpack_require__(5);
-var getKeys = __webpack_require__(62);
+var getKeys = __webpack_require__(70);
 
 module.exports = __webpack_require__(8) ? Object.defineProperties : function defineProperties(O, Properties) {
   anObject(O);
@@ -7735,12 +8157,12 @@ module.exports = __webpack_require__(8) ? Object.defineProperties : function def
 
 
 /***/ }),
-/* 62 */
+/* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.14 / 15.2.3.14 Object.keys(O)
-var $keys = __webpack_require__(63);
-var enumBugKeys = __webpack_require__(31);
+var $keys = __webpack_require__(71);
+var enumBugKeys = __webpack_require__(33);
 
 module.exports = Object.keys || function keys(O) {
   return $keys(O, enumBugKeys);
@@ -7748,13 +8170,13 @@ module.exports = Object.keys || function keys(O) {
 
 
 /***/ }),
-/* 63 */
+/* 71 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var has = __webpack_require__(14);
-var toIObject = __webpack_require__(20);
-var arrayIndexOf = __webpack_require__(65)(false);
-var IE_PROTO = __webpack_require__(21)('IE_PROTO');
+var toIObject = __webpack_require__(21);
+var arrayIndexOf = __webpack_require__(73)(false);
+var IE_PROTO = __webpack_require__(22)('IE_PROTO');
 
 module.exports = function (object, names) {
   var O = toIObject(object);
@@ -7771,7 +8193,7 @@ module.exports = function (object, names) {
 
 
 /***/ }),
-/* 64 */
+/* 72 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // fallback for non-array-like ES3 and non-enumerable old V8 strings
@@ -7783,14 +8205,14 @@ module.exports = Object('z').propertyIsEnumerable(0) ? Object : function (it) {
 
 
 /***/ }),
-/* 65 */
+/* 73 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // false -> Array#indexOf
 // true  -> Array#includes
-var toIObject = __webpack_require__(20);
-var toLength = __webpack_require__(28);
-var toAbsoluteIndex = __webpack_require__(66);
+var toIObject = __webpack_require__(21);
+var toLength = __webpack_require__(30);
+var toAbsoluteIndex = __webpack_require__(74);
 module.exports = function (IS_INCLUDES) {
   return function ($this, el, fromIndex) {
     var O = toIObject($this);
@@ -7812,10 +8234,10 @@ module.exports = function (IS_INCLUDES) {
 
 
 /***/ }),
-/* 66 */
+/* 74 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var toInteger = __webpack_require__(16);
+var toInteger = __webpack_require__(17);
 var max = Math.max;
 var min = Math.min;
 module.exports = function (index, length) {
@@ -7825,13 +8247,13 @@ module.exports = function (index, length) {
 
 
 /***/ }),
-/* 67 */
+/* 75 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.9 / 15.2.3.2 Object.getPrototypeOf(O)
 var has = __webpack_require__(14);
-var toObject = __webpack_require__(68);
-var IE_PROTO = __webpack_require__(21)('IE_PROTO');
+var toObject = __webpack_require__(76);
+var IE_PROTO = __webpack_require__(22)('IE_PROTO');
 var ObjectProto = Object.prototype;
 
 module.exports = Object.getPrototypeOf || function (O) {
@@ -7844,21 +8266,21 @@ module.exports = Object.getPrototypeOf || function (O) {
 
 
 /***/ }),
-/* 68 */
+/* 76 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 7.1.13 ToObject(argument)
-var defined = __webpack_require__(17);
+var defined = __webpack_require__(18);
 module.exports = function (it) {
   return Object(defined(it));
 };
 
 
 /***/ }),
-/* 69 */
+/* 77 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(70);
+__webpack_require__(78);
 var global = __webpack_require__(0);
 var hide = __webpack_require__(6);
 var Iterators = __webpack_require__(9);
@@ -7880,21 +8302,21 @@ for (var i = 0; i < DOMIterables.length; i++) {
 
 
 /***/ }),
-/* 70 */
+/* 78 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var addToUnscopables = __webpack_require__(71);
-var step = __webpack_require__(72);
+var addToUnscopables = __webpack_require__(79);
+var step = __webpack_require__(80);
 var Iterators = __webpack_require__(9);
-var toIObject = __webpack_require__(20);
+var toIObject = __webpack_require__(21);
 
 // 22.1.3.4 Array.prototype.entries()
 // 22.1.3.13 Array.prototype.keys()
 // 22.1.3.29 Array.prototype.values()
 // 22.1.3.30 Array.prototype[@@iterator]()
-module.exports = __webpack_require__(25)(Array, 'Array', function (iterated, kind) {
+module.exports = __webpack_require__(27)(Array, 'Array', function (iterated, kind) {
   this._t = toIObject(iterated); // target
   this._i = 0;                   // next index
   this._k = kind;                // kind
@@ -7921,14 +8343,14 @@ addToUnscopables('entries');
 
 
 /***/ }),
-/* 71 */
+/* 79 */
 /***/ (function(module, exports) {
 
 module.exports = function () { /* empty */ };
 
 
 /***/ }),
-/* 72 */
+/* 80 */
 /***/ (function(module, exports) {
 
 module.exports = function (done, value) {
@@ -7937,27 +8359,27 @@ module.exports = function (done, value) {
 
 
 /***/ }),
-/* 73 */
+/* 81 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var LIBRARY = __webpack_require__(18);
+var LIBRARY = __webpack_require__(19);
 var global = __webpack_require__(0);
 var ctx = __webpack_require__(11);
-var classof = __webpack_require__(33);
+var classof = __webpack_require__(35);
 var $export = __webpack_require__(10);
 var isObject = __webpack_require__(7);
 var aFunction = __webpack_require__(12);
-var anInstance = __webpack_require__(74);
-var forOf = __webpack_require__(75);
-var speciesConstructor = __webpack_require__(34);
-var task = __webpack_require__(35).set;
-var microtask = __webpack_require__(80)();
-var newPromiseCapabilityModule = __webpack_require__(23);
-var perform = __webpack_require__(36);
-var userAgent = __webpack_require__(81);
-var promiseResolve = __webpack_require__(37);
+var anInstance = __webpack_require__(82);
+var forOf = __webpack_require__(83);
+var speciesConstructor = __webpack_require__(36);
+var task = __webpack_require__(37).set;
+var microtask = __webpack_require__(88)();
+var newPromiseCapabilityModule = __webpack_require__(24);
+var perform = __webpack_require__(38);
+var userAgent = __webpack_require__(89);
+var promiseResolve = __webpack_require__(39);
 var PROMISE = 'Promise';
 var TypeError = global.TypeError;
 var process = global.process;
@@ -8132,7 +8554,7 @@ if (!USE_NATIVE) {
     this._h = 0;              // <- rejection state, 0 - default, 1 - handled, 2 - unhandled
     this._n = false;          // <- notify
   };
-  Internal.prototype = __webpack_require__(82)($Promise.prototype, {
+  Internal.prototype = __webpack_require__(90)($Promise.prototype, {
     // 25.4.5.3 Promise.prototype.then(onFulfilled, onRejected)
     then: function then(onFulfilled, onRejected) {
       var reaction = newPromiseCapability(speciesConstructor(this, $Promise));
@@ -8163,8 +8585,8 @@ if (!USE_NATIVE) {
 }
 
 $export($export.G + $export.W + $export.F * !USE_NATIVE, { Promise: $Promise });
-__webpack_require__(22)($Promise, PROMISE);
-__webpack_require__(83)(PROMISE);
+__webpack_require__(23)($Promise, PROMISE);
+__webpack_require__(91)(PROMISE);
 Wrapper = __webpack_require__(4)[PROMISE];
 
 // statics
@@ -8183,7 +8605,7 @@ $export($export.S + $export.F * (LIBRARY || !USE_NATIVE), PROMISE, {
     return promiseResolve(LIBRARY && this === Wrapper ? $Promise : this, x);
   }
 });
-$export($export.S + $export.F * !(USE_NATIVE && __webpack_require__(84)(function (iter) {
+$export($export.S + $export.F * !(USE_NATIVE && __webpack_require__(92)(function (iter) {
   $Promise.all(iter)['catch'](empty);
 })), PROMISE, {
   // 25.4.4.1 Promise.all(iterable)
@@ -8230,7 +8652,7 @@ $export($export.S + $export.F * !(USE_NATIVE && __webpack_require__(84)(function
 
 
 /***/ }),
-/* 74 */
+/* 82 */
 /***/ (function(module, exports) {
 
 module.exports = function (it, Constructor, name, forbiddenField) {
@@ -8241,15 +8663,15 @@ module.exports = function (it, Constructor, name, forbiddenField) {
 
 
 /***/ }),
-/* 75 */
+/* 83 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var ctx = __webpack_require__(11);
-var call = __webpack_require__(76);
-var isArrayIter = __webpack_require__(77);
+var call = __webpack_require__(84);
+var isArrayIter = __webpack_require__(85);
 var anObject = __webpack_require__(5);
-var toLength = __webpack_require__(28);
-var getIterFn = __webpack_require__(78);
+var toLength = __webpack_require__(30);
+var getIterFn = __webpack_require__(86);
 var BREAK = {};
 var RETURN = {};
 var exports = module.exports = function (iterable, entries, fn, that, ITERATOR) {
@@ -8272,7 +8694,7 @@ exports.RETURN = RETURN;
 
 
 /***/ }),
-/* 76 */
+/* 84 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // call something on iterator step with safe closing on error
@@ -8290,7 +8712,7 @@ module.exports = function (iterator, fn, value, entries) {
 
 
 /***/ }),
-/* 77 */
+/* 85 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // check on default Array iterator
@@ -8304,10 +8726,10 @@ module.exports = function (it) {
 
 
 /***/ }),
-/* 78 */
+/* 86 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var classof = __webpack_require__(33);
+var classof = __webpack_require__(35);
 var ITERATOR = __webpack_require__(1)('iterator');
 var Iterators = __webpack_require__(9);
 module.exports = __webpack_require__(4).getIteratorMethod = function (it) {
@@ -8318,7 +8740,7 @@ module.exports = __webpack_require__(4).getIteratorMethod = function (it) {
 
 
 /***/ }),
-/* 79 */
+/* 87 */
 /***/ (function(module, exports) {
 
 // fast apply, http://jsperf.lnkit.com/fast-apply/5
@@ -8340,11 +8762,11 @@ module.exports = function (fn, args, that) {
 
 
 /***/ }),
-/* 80 */
+/* 88 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var global = __webpack_require__(0);
-var macrotask = __webpack_require__(35).set;
+var macrotask = __webpack_require__(37).set;
 var Observer = global.MutationObserver || global.WebKitMutationObserver;
 var process = global.process;
 var Promise = global.Promise;
@@ -8415,7 +8837,7 @@ module.exports = function () {
 
 
 /***/ }),
-/* 81 */
+/* 89 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var global = __webpack_require__(0);
@@ -8425,7 +8847,7 @@ module.exports = navigator && navigator.userAgent || '';
 
 
 /***/ }),
-/* 82 */
+/* 90 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var hide = __webpack_require__(6);
@@ -8438,7 +8860,7 @@ module.exports = function (target, src, safe) {
 
 
 /***/ }),
-/* 83 */
+/* 91 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8459,7 +8881,7 @@ module.exports = function (KEY) {
 
 
 /***/ }),
-/* 84 */
+/* 92 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var ITERATOR = __webpack_require__(1)('iterator');
@@ -8487,7 +8909,7 @@ module.exports = function (exec, skipClosing) {
 
 
 /***/ }),
-/* 85 */
+/* 93 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8496,8 +8918,8 @@ module.exports = function (exec, skipClosing) {
 var $export = __webpack_require__(10);
 var core = __webpack_require__(4);
 var global = __webpack_require__(0);
-var speciesConstructor = __webpack_require__(34);
-var promiseResolve = __webpack_require__(37);
+var speciesConstructor = __webpack_require__(36);
+var promiseResolve = __webpack_require__(39);
 
 $export($export.P + $export.R, 'Promise', { 'finally': function (onFinally) {
   var C = speciesConstructor(this, core.Promise || global.Promise);
@@ -8514,15 +8936,15 @@ $export($export.P + $export.R, 'Promise', { 'finally': function (onFinally) {
 
 
 /***/ }),
-/* 86 */
+/* 94 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 // https://github.com/tc39/proposal-promise-try
 var $export = __webpack_require__(10);
-var newPromiseCapability = __webpack_require__(23);
-var perform = __webpack_require__(36);
+var newPromiseCapability = __webpack_require__(24);
+var perform = __webpack_require__(38);
 
 $export($export.S, 'Promise', { 'try': function (callbackfn) {
   var promiseCapability = newPromiseCapability.f(this);
@@ -8533,20 +8955,18 @@ $export($export.S, 'Promise', { 'try': function (callbackfn) {
 
 
 /***/ }),
-/* 87 */,
-/* 88 */,
-/* 89 */,
-/* 90 */,
-/* 91 */,
-/* 92 */,
-/* 93 */,
-/* 94 */,
 /* 95 */,
 /* 96 */,
 /* 97 */,
 /* 98 */,
 /* 99 */,
-/* 100 */
+/* 100 */,
+/* 101 */,
+/* 102 */,
+/* 103 */,
+/* 104 */,
+/* 105 */,
+/* 106 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -9559,18 +9979,18 @@ var index_esm = {
 
 
 /***/ }),
-/* 101 */,
-/* 102 */,
-/* 103 */,
-/* 104 */,
-/* 105 */,
-/* 106 */
+/* 107 */,
+/* 108 */,
+/* 109 */,
+/* 110 */,
+/* 111 */,
+/* 112 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 107 */
+/* 113 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -9588,7 +10008,7 @@ var index_esm = {
 });
 
 /***/ }),
-/* 108 */
+/* 114 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -9607,6 +10027,645 @@ if (false) {
      require("vue-hot-reload-api").rerender("data-v-1fb80d35", esExports)
   }
 }
+
+/***/ }),
+/* 115 */,
+/* 116 */,
+/* 117 */,
+/* 118 */,
+/* 119 */,
+/* 120 */,
+/* 121 */,
+/* 122 */,
+/* 123 */,
+/* 124 */,
+/* 125 */,
+/* 126 */,
+/* 127 */,
+/* 128 */,
+/* 129 */,
+/* 130 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var constants = __webpack_require__(16);
+var login = __webpack_require__(43);
+var Session = __webpack_require__(25);
+var request = __webpack_require__(44);
+var Tunnel = __webpack_require__(132);
+
+var exports = module.exports = {
+    login: login.login,
+    loginWithCode: login.loginWithCode,
+    setLoginUrl: login.setLoginUrl,
+
+    Session,
+    clearSession: Session.clear,
+
+    request: request.request,
+    RequestError: request.RequestError,
+
+    Tunnel: Tunnel,
+};
+
+// 导出错误类型码
+Object.keys(constants).forEach(function (key) {
+    if (key.indexOf('ERR_') === 0) {
+        exports[key] = constants[key];
+    }
+});
+
+/***/ }),
+/* 131 */
+/***/ (function(module, exports) {
+
+
+/**
+ * 拓展对象
+ */
+exports.extend = function extend(target) {
+    var sources = Array.prototype.slice.call(arguments, 1);
+
+    for (var i = 0; i < sources.length; i += 1) {
+        var source = sources[i];
+        for (var key in source) {
+            if (source.hasOwnProperty(key)) {
+                target[key] = source[key];
+            }
+        }
+    }
+
+    return target;
+};
+
+/***/ }),
+/* 132 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var requestLib = __webpack_require__(44);
+var wxTunnel = __webpack_require__(133);
+
+/**
+ * 当前打开的信道，同一时间只能有一个信道打开
+ */
+var currentTunnel = null;
+
+// 信道状态枚举
+var STATUS_CLOSED = Tunnel.STATUS_CLOSED = 'CLOSED';
+var STATUS_CONNECTING = Tunnel.STATUS_CONNECTING = 'CONNECTING';
+var STATUS_ACTIVE = Tunnel.STATUS_ACTIVE = 'ACTIVE';
+var STATUS_RECONNECTING = Tunnel.STATUS_RECONNECTING = 'RECONNECTING';
+
+// 错误类型枚举
+var ERR_CONNECT_SERVICE = Tunnel.ERR_CONNECT_SERVICE = 1001;
+var ERR_CONNECT_SOCKET = Tunnel.ERR_CONNECT_SOCKET = 1002;
+var ERR_RECONNECT = Tunnel.ERR_RECONNECT = 2001;
+var ERR_SOCKET_ERROR = Tunnel.ERR_SOCKET_ERROR = 3001;
+
+// 包类型枚举
+var PACKET_TYPE_MESSAGE = 'message';
+var PACKET_TYPE_PING = 'ping';
+var PACKET_TYPE_PONG = 'pong';
+var PACKET_TYPE_TIMEOUT = 'timeout';
+var PACKET_TYPE_CLOSE = 'close';
+
+// 断线重连最多尝试 5 次
+var DEFAULT_MAX_RECONNECT_TRY_TIMES = 5;
+
+// 每次重连前，等待时间的增量值
+var DEFAULT_RECONNECT_TIME_INCREASE = 1000;
+
+function Tunnel(serviceUrl) {
+    if (currentTunnel && currentTunnel.status !== STATUS_CLOSED) {
+        throw new Error('当前有未关闭的信道，请先关闭之前的信道，再打开新信道');
+    }
+
+    currentTunnel = this;
+
+    // 等确认微信小程序全面支持 ES6 就不用那么麻烦了
+    var me = this;
+
+    //=========================================================================
+    // 暴露实例状态以及方法
+    //=========================================================================
+    this.serviceUrl = serviceUrl;
+    this.socketUrl = null;
+    this.status = null;
+
+    this.open = openConnect;
+    this.on = registerEventHandler;
+    this.emit = emitMessagePacket;
+    this.close = close;
+
+    this.isClosed = isClosed;
+    this.isConnecting = isConnecting;
+    this.isActive = isActive;
+    this.isReconnecting = isReconnecting;
+
+
+    //=========================================================================
+    // 信道状态处理，状态说明：
+    //   closed       - 已关闭
+    //   connecting   - 首次连接
+    //   active       - 当前信道已经在工作
+    //   reconnecting - 断线重连中
+    //=========================================================================
+    function isClosed() { return me.status === STATUS_CLOSED; }
+    function isConnecting() { return me.status === STATUS_CONNECTING; }
+    function isActive() { return me.status === STATUS_ACTIVE; }
+    function isReconnecting() { return me.status === STATUS_RECONNECTING; }
+
+    function setStatus(status) {
+        var lastStatus = me.status;
+        if (lastStatus !== status) {
+            me.status = status;
+        }
+    }
+
+    // 初始为关闭状态
+    setStatus(STATUS_CLOSED);
+
+
+    //=========================================================================
+    // 信道事件处理机制
+    // 信道事件包括：
+    //   connect      - 连接已建立
+    //   close        - 连接被关闭（包括主动关闭和被动关闭）
+    //   reconnecting - 开始重连
+    //   reconnect    - 重连成功
+    //   error        - 发生错误，其中包括连接失败、重连失败、解包失败等等
+    //   [message]    - 信道服务器发送过来的其它事件类型，如果事件类型和上面内置的事件类型冲突，将在事件类型前面添加前缀 `@`
+    //=========================================================================
+    var preservedEventTypes = 'connect,close,reconnecting,reconnect,error'.split(',');
+    var eventHandlers = [];
+
+    /**
+     * 注册消息处理函数
+     * @param {string} messageType 支持内置消息类型（"connect"|"close"|"reconnecting"|"reconnect"|"error"）以及业务消息类型
+     */
+    function registerEventHandler(eventType, eventHandler) {
+        if (typeof eventHandler === 'function') {
+            eventHandlers.push([eventType, eventHandler]);
+        }
+    }
+
+    /**
+     * 派发事件，通知所有处理函数进行处理
+     */
+    function dispatchEvent(eventType, eventPayload) {
+        eventHandlers.forEach(function (handler) {
+            var handleType = handler[0];
+            var handleFn = handler[1];
+
+            if (handleType === '*') {
+                handleFn(eventType, eventPayload);
+            } else if (handleType === eventType) {
+                handleFn(eventPayload);
+            }
+        });
+    }
+
+    /**
+     * 派发事件，事件类型和系统保留冲突的，事件名会自动加上 '@' 前缀
+     */
+    function dispatchEscapedEvent(eventType, eventPayload) {
+        if (preservedEventTypes.indexOf(eventType) > -1) {
+            eventType = '@' + eventType;
+        }
+
+        dispatchEvent(eventType, eventPayload);
+    }
+
+
+    //=========================================================================
+    // 信道连接控制
+    //=========================================================================
+    var isFirstConnection = true;
+    var isOpening = false;
+
+    /**
+     * 连接信道服务器，获取 WebSocket 连接地址，获取地址成功后，开始进行 WebSocket 连接
+     */
+    function openConnect() {
+        if (isOpening) return;
+        isOpening = true;
+
+        // 只有关闭状态才会重新进入准备中
+        setStatus(isFirstConnection ? STATUS_CONNECTING : STATUS_RECONNECTING);
+
+        requestLib.request({
+            url: serviceUrl,
+            method: 'GET',
+            success: function (response) {
+                if (+response.statusCode === 200 && response.data && response.data.data.connectUrl) {
+                    openSocket(me.socketUrl = response.data.data.connectUrl);
+                } else {
+                    dispatchConnectServiceError(response);
+                }
+            },
+            fail: dispatchConnectServiceError,
+            complete: () => isOpening = false,
+        });
+
+        function dispatchConnectServiceError(detail) {
+            if (isFirstConnection) {
+                setStatus(STATUS_CLOSED);
+
+                dispatchEvent('error', {
+                    code: ERR_CONNECT_SERVICE,
+                    message: '连接信道服务失败，网络错误或者信道服务没有正确响应',
+                    detail: detail || null,
+                });
+
+            } else {
+                startReconnect(detail);
+            }
+        }
+    }
+
+    /**
+     * 打开 WebSocket 连接，打开后，注册微信的 Socket 处理方法
+     */
+    function openSocket(url) {
+        wxTunnel.listen({
+            onOpen: handleSocketOpen,
+            onMessage: handleSocketMessage,
+            onClose: handleSocketClose,
+            onError: handleSocketError,
+        });
+
+        wx.connectSocket({ url: url });
+        isFirstConnection = false;
+    }
+
+
+    //=========================================================================
+    // 处理消息通讯
+    //
+    // packet           - 数据包，序列化形式为 `${type}` 或者 `${type}:${content}`
+    // packet.type      - 包类型，包括 message, ping, pong, close
+    // packet.content?  - 当包类型为 message 的时候，会附带 message 数据
+    //
+    // message          - 消息体，会使用 JSON 序列化后作为 packet.content
+    // message.type     - 消息类型，表示业务消息类型
+    // message.content? - 消息实体，可以为任意类型，表示消息的附带数据，也可以为空
+    //
+    // 数据包示例：
+    //  - 'ping' 表示 Ping 数据包
+    //  - 'message:{"type":"speak","content":"hello"}' 表示一个打招呼的数据包
+    //=========================================================================
+
+    // 连接还没成功建立的时候，需要发送的包会先存放到队列里
+    var queuedPackets = [];
+
+    /**
+     * WebSocket 打开之后，更新状态，同时发送所有遗留的数据包
+     */
+    function handleSocketOpen() {
+        /* istanbul ignore else */
+        if (isConnecting()) {
+            dispatchEvent('connect');
+
+        }
+        else if (isReconnecting()) {
+            dispatchEvent('reconnect');
+            resetReconnectionContext();
+        }
+
+        setStatus(STATUS_ACTIVE);
+        emitQueuedPackets();
+        nextPing();
+    }
+
+    /**
+     * 收到 WebSocket 数据包，交给处理函数
+     */
+    function handleSocketMessage(message) {
+        resolvePacket(message.data);
+    }
+
+    /**
+     * 发送数据包，如果信道没有激活，将先存放队列
+     */
+    function emitPacket(packet) {
+        if (isActive()) {
+            sendPacket(packet);
+        } else {
+            queuedPackets.push(packet);
+        }
+    }
+
+    /**
+     * 数据包推送到信道
+     */
+    function sendPacket(packet) {
+        var encodedPacket = [packet.type];
+
+        if (packet.content) {
+            encodedPacket.push(JSON.stringify(packet.content));
+        }
+
+        wx.sendSocketMessage({
+            data: encodedPacket.join(':'),
+            fail: handleSocketError,
+        });
+    }
+
+    function emitQueuedPackets() {
+        queuedPackets.forEach(emitPacket);
+
+        // empty queued packets
+        queuedPackets.length = 0;
+    }
+
+    /**
+     * 发送消息包
+     */
+    function emitMessagePacket(messageType, messageContent) {
+        var packet = {
+            type: PACKET_TYPE_MESSAGE,
+            content: {
+                type: messageType,
+                content: messageContent,
+            },
+        };
+
+        emitPacket(packet);
+    }
+
+    /**
+     * 发送 Ping 包
+     */
+    function emitPingPacket() {
+        emitPacket({ type: PACKET_TYPE_PING });
+    }
+
+    /**
+     * 发送关闭包
+     */
+    function emitClosePacket() {
+        emitPacket({ type: PACKET_TYPE_CLOSE });
+    }
+
+    /**
+     * 解析并处理从信道接收到的包
+     */
+    function resolvePacket(raw) {
+        var packetParts = raw.split(':');
+        var packetType = packetParts.shift();
+        var packetContent = packetParts.join(':') || null;
+        var packet = { type: packetType };
+
+        if (packetContent) {
+            try {
+                packet.content = JSON.parse(packetContent);
+            } catch (e) {}
+        }
+
+        switch (packet.type) {
+        case PACKET_TYPE_MESSAGE:
+            handleMessagePacket(packet);
+            break;
+        case PACKET_TYPE_PONG:
+            handlePongPacket(packet);
+            break;
+        case PACKET_TYPE_TIMEOUT:
+            handleTimeoutPacket(packet);
+            break;
+        case PACKET_TYPE_CLOSE:
+            handleClosePacket(packet);
+            break;
+        default:
+            handleUnknownPacket(packet);
+            break;
+        }
+    }
+
+    /**
+     * 收到消息包，直接 dispatch 给处理函数
+     */
+    function handleMessagePacket(packet) {
+        var message = packet.content;
+        dispatchEscapedEvent(message.type, message.content);
+    }
+
+
+    //=========================================================================
+    // 心跳、断开与重连处理
+    //=========================================================================
+
+    /**
+     * Ping-Pong 心跳检测超时控制，这个值有两个作用：
+     *   1. 表示收到服务器的 Pong 相应之后，过多久再发下一次 Ping
+     *   2. 如果 Ping 发送之后，超过这个时间还没收到 Pong，断开与服务器的连接
+     * 该值将在与信道服务器建立连接后被更新
+     */
+    let pingPongTimeout = 15000;
+    let pingTimer = 0;
+    let pongTimer = 0;
+
+    /**
+     * 信道服务器返回 Ping-Pong 控制超时时间
+     */
+    function handleTimeoutPacket(packet) {
+        var timeout = packet.content * 1000;
+        /* istanbul ignore else */
+        if (!isNaN(timeout)) {
+            pingPongTimeout = timeout;
+            ping();
+        }
+    }
+
+    /**
+     * 收到服务器 Pong 响应，定时发送下一个 Ping
+     */
+    function handlePongPacket(packet) {
+        nextPing();
+    }
+
+    /**
+     * 发送下一个 Ping 包
+     */
+    function nextPing() {
+        clearTimeout(pingTimer);
+        clearTimeout(pongTimer);
+        pingTimer = setTimeout(ping, pingPongTimeout);
+    }
+
+    /**
+     * 发送 Ping，等待 Pong
+     */
+    function ping() {
+        /* istanbul ignore else */
+        if (isActive()) {
+            emitPingPacket();
+
+            // 超时没有响应，关闭信道
+            pongTimer = setTimeout(handlePongTimeout, pingPongTimeout);
+        }
+    }
+
+    /**
+     * Pong 超时没有响应，信道可能已经不可用，需要断开重连
+     */
+    function handlePongTimeout() {
+        startReconnect('服务器已失去响应');
+    }
+
+    // 已经重连失败的次数
+    var reconnectTryTimes = 0;
+
+    // 最多允许失败次数
+    var maxReconnectTryTimes = Tunnel.MAX_RECONNECT_TRY_TIMES || DEFAULT_MAX_RECONNECT_TRY_TIMES;
+
+    // 重连前等待的时间
+    var waitBeforeReconnect = 0;
+
+    // 重连前等待时间增量
+    var reconnectTimeIncrease = Tunnel.RECONNECT_TIME_INCREASE || DEFAULT_RECONNECT_TIME_INCREASE;
+
+    var reconnectTimer = 0;
+
+    function startReconnect(lastError) {
+        if (reconnectTryTimes >= maxReconnectTryTimes) {
+            close();
+
+            dispatchEvent('error', {
+                code: ERR_RECONNECT,
+                message: '重连失败',
+                detail: lastError,
+            });
+        }
+        else {
+            wx.closeSocket();
+            waitBeforeReconnect += reconnectTimeIncrease;
+            setStatus(STATUS_RECONNECTING);
+            reconnectTimer = setTimeout(doReconnect, waitBeforeReconnect);
+        }
+
+        if (reconnectTryTimes === 0) {
+            dispatchEvent('reconnecting');
+        }
+
+        reconnectTryTimes += 1;
+    }
+
+    function doReconnect() {
+        openConnect();
+    }
+
+    function resetReconnectionContext() {
+        reconnectTryTimes = 0;
+        waitBeforeReconnect = 0;
+    }
+
+    /**
+     * 收到服务器的关闭请求
+     */
+    function handleClosePacket(packet) {
+        close();
+    }
+
+    function handleUnknownPacket(packet) {
+        // throw away
+    }
+
+    var isClosing = false;
+
+    /**
+     * 收到 WebSocket 断开的消息，处理断开逻辑
+     */
+    function handleSocketClose() {
+        /* istanbul ignore if */
+        if (isClosing) return;
+
+        /* istanbul ignore else */
+        if (isActive()) {
+            // 意外断开的情况，进行重连
+            startReconnect('链接已断开');
+        }
+    }
+
+    function close() {
+        isClosing = true;
+        closeSocket();
+        setStatus(STATUS_CLOSED);
+        resetReconnectionContext();
+        isFirstConnection = false;
+        clearTimeout(pingTimer);
+        clearTimeout(pongTimer);
+        clearTimeout(reconnectTimer);
+        dispatchEvent('close');
+        isClosing = false;
+    }
+
+    function closeSocket(emitClose) {
+        if (isActive() && emitClose !== false) {
+            emitClosePacket();
+        }
+
+        wx.closeSocket();
+    }
+
+
+    //=========================================================================
+    // 错误处理
+    //=========================================================================
+
+    /**
+     * 错误处理
+     */
+    function handleSocketError(detail) {
+        switch (me.status) {
+        case Tunnel.STATUS_CONNECTING:
+            dispatchEvent('error', {
+                code: ERR_SOCKET_ERROR,
+                message: '连接信道失败，网络错误或者信道服务不可用',
+                detail: detail,
+            });
+            break;
+        }
+    }
+
+}
+
+module.exports = Tunnel;
+
+/***/ }),
+/* 133 */
+/***/ (function(module, exports) {
+
+/* istanbul ignore next */
+const noop = () => void(0);
+
+let onOpen, onClose, onMessage, onError;
+
+/* istanbul ignore next */
+function listen(listener) {
+    if (listener) {
+        onOpen = listener.onOpen;
+        onClose = listener.onClose;
+        onMessage = listener.onMessage;
+        onError = listener.onError;
+    } else {
+        onOpen = noop;
+        onClose = noop;
+        onMessage = noop;
+        onError = noop;
+    }
+}
+
+/* istanbul ignore next */
+function bind() {
+    wx.onSocketOpen(result => onOpen(result));
+    wx.onSocketClose(result => onClose(result));
+    wx.onSocketMessage(result => onMessage(result));
+    wx.onSocketError(error => onError(error));
+}
+
+listen(null);
+bind();
+
+module.exports = { listen };
 
 /***/ })
 ]);

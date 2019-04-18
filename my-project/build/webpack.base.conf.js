@@ -54,13 +54,13 @@ let baseWebpackConfig = {
   },
   module: {
     rules: [
-      /*{
+     /* {
         test: /\.(js|vue)$/,
         loader: 'eslint-loader',
         enforce: 'pre',
         include: [resolve('src'), resolve('test')],
         options: {
-          formatter: require('eslint-friendly-formatter')
+          formannptter: require('eslint-friendly-formatter')
         }
       },*/
       {
@@ -102,6 +102,11 @@ let baseWebpackConfig = {
           limit: 10000,
           name: utils.assetsPath('fonts/[name].[ext]')
         }
+      },
+      {
+        //SCSS加载  识别sass-loader编译的部分
+        test:/\.scss$/,
+        loaders:["style","css","sass"]
       }
     ]
   },

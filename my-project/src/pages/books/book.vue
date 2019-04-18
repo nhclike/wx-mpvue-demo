@@ -6,18 +6,20 @@
 </template>
 
 <script>
-  import {get,post} from "@/util"
+  import {get} from '@/util'
+
   export default {
     data () {
       return {
-        msg:'book',
+        msg: 'book'
       }
     },
-    async created(){
-      const res=await get('/weapp/demo');
-      console.log("小程序启动了")
+    async created () {
+      const res = await get('/weapp/demo');
+      console.log(res);
+      console.log('小程序启动了');
     },
-    methods:{
+    methods: {
 
     }
   }
