@@ -26,7 +26,7 @@
     data () {
       return {
         userinfo:{
-          avatarUrl:'../../../static/img/unlogin.png',
+          avatarUrl:'/static/img/unlogin.png',
           nickName:''
         }
       }
