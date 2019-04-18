@@ -6,11 +6,19 @@
 </template>
 
 <script>
+  import {get,post} from "@/util"
   export default {
     data () {
       return {
         msg:'book',
       }
+    },
+    async created(){
+      const res=await get('/weapp/demo');
+      console.log("小程序启动了")
+    },
+    methods:{
+
     }
   }
 </script>
