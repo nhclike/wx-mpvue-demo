@@ -12,9 +12,9 @@
     "enablePullDownRefresh":true
   },
   "tabBar": {
-    "color": "#fff",
+    "color": "#333",
     "backgroundColor": "#fafafa",
-    "selectedColor": "#333",
+    "selectedColor": "#e4393c",
     "borderStyle": "white",
     "list": [{
       "text": "图书",

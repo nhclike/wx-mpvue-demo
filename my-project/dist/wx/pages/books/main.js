@@ -2,14 +2,21 @@ require("../../common/manifest.js")
 require("../../common/vendor.js")
 global.webpackJsonpMpvue([6],{
 
-/***/ 51:
+/***/ 141:
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+
+/***/ 49:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__book__ = __webpack_require__(52);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__book__ = __webpack_require__(50);
 
 
 
@@ -25,16 +32,16 @@ app.$mount();
 
 /***/ }),
 
-/***/ 52:
+/***/ 50:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_mpvue_loader_lib_selector_type_script_index_0_book_vue__ = __webpack_require__(54);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__node_modules_mpvue_loader_lib_template_compiler_index_id_data_v_5c52b386_hasScoped_true_transformToRequire_video_src_source_src_img_src_image_xlink_href_fileExt_template_wxml_script_js_style_wxss_platform_wx_node_modules_mpvue_loader_lib_selector_type_template_index_0_book_vue__ = __webpack_require__(94);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_mpvue_loader_lib_selector_type_script_index_0_book_vue__ = __webpack_require__(52);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__node_modules_mpvue_loader_lib_template_compiler_index_id_data_v_5c52b386_hasScoped_true_transformToRequire_video_src_source_src_img_src_image_xlink_href_fileExt_template_wxml_script_js_style_wxss_platform_wx_node_modules_mpvue_loader_lib_selector_type_template_index_0_book_vue__ = __webpack_require__(89);
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(53)
+  __webpack_require__(141)
 }
 var normalizeComponent = __webpack_require__(2)
 /* script */
@@ -79,24 +86,66 @@ if (false) {(function () {
 
 /***/ }),
 
-/***/ 53:
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-
-/***/ 54:
+/***/ 52:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator__ = __webpack_require__(55);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_babel_runtime_helpers_asyncToGenerator__ = __webpack_require__(58);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_babel_runtime_helpers_asyncToGenerator___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_babel_runtime_helpers_asyncToGenerator__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__util__ = __webpack_require__(40);
-
-
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__util__ = __webpack_require__(26);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -110,47 +159,118 @@ if (false) {(function () {
 /* harmony default export */ __webpack_exports__["a"] = ({
   data: function data() {
     return {
-      msg: 'book'
+      msg: 'book',
+      bookTypes: [{
+        "id": "242",
+        "catalog": "中国文学"
+      }, {
+        "id": "252",
+        "catalog": "人物传记"
+      }, {
+        "id": "244",
+        "catalog": "儿童文学"
+      }, {
+        "id": "248",
+        "catalog": "历史"
+      }, {
+        "id": "257",
+        "catalog": "哲学"
+      }, {
+        "id": "243",
+        "catalog": "外国文学"
+      }, {
+        "id": "247",
+        "catalog": "小说"
+      }, {
+        "id": "251",
+        "catalog": "心灵鸡汤"
+      }, {
+        "id": "253",
+        "catalog": "心理学"
+      }, {
+        "id": "250",
+        "catalog": "成功励志"
+      }, {
+        "id": "249",
+        "catalog": "教育"
+      }, {
+        "id": "245",
+        "catalog": "散文"
+      }, {
+        "id": "256",
+        "catalog": "理财"
+      }, {
+        "id": "254",
+        "catalog": "管理"
+      }, {
+        "id": "246",
+        "catalog": "经典名著"
+      }, {
+        "id": "255",
+        "catalog": "经济"
+      }, {
+        "id": "258",
+        "catalog": "计算机"
+      }],
+      books: []
     };
   },
   created: function created() {
-    var _this = this;
+    //this.getBooktypeData();
+  },
+  mounted: function mounted() {},
 
-    return __WEBPACK_IMPORTED_MODULE_1_babel_runtime_helpers_asyncToGenerator___default()( /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.mark(function _callee() {
-      var res;
-      return __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.wrap(function _callee$(_context) {
-        while (1) {
-          switch (_context.prev = _context.next) {
-            case 0:
-              _context.next = 2;
-              return Object(__WEBPACK_IMPORTED_MODULE_2__util__["a" /* get */])('/weapp/demo');
-
-            case 2:
-              res = _context.sent;
-
-              console.log(res);
-              console.log('小程序启动了');
-
-            case 5:
-            case 'end':
-              return _context.stop();
+  methods: {
+    getBooktypeData: function getBooktypeData() {
+      var _this = this;
+      wx.request({
+        url: 'http://apis.juhe.cn/goodbook/catalog?dtype=&key=9a52a17273c6c1b42808f1cf847fdca6',
+        success: function success(res) {
+          if (res.data.result != null) {
+            _this.bookTypes = res.data.result;
+            console.log(_this.bookTypes);
           }
         }
-      }, _callee, _this);
-    }))();
-  },
-
-  methods: {}
+      });
+    }
+  }
 });
 
 /***/ }),
 
-/***/ 94:
+/***/ 89:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', [_c('h1', [_vm._v(_vm._s(_vm.msg))])], 1)
+  return _c('div', {
+    staticClass: "fixed-wrapper"
+  }, [_c('div', {
+    staticClass: "container"
+  }, [_c('div', {
+    staticClass: "type"
+  }, [_c('p', {
+    staticClass: "title"
+  }, [_vm._v("图书分类")]), _vm._v(" "), _c('div', {
+    staticClass: "type-box"
+  }, [_c('ul', [_vm._l((_vm.bookTypes), function(book, index) {
+    return _c('li', {
+      key: book.catalog
+    }, [_vm._v("\n            " + _vm._s(book.catalog) + "\n          ")])
+  }), _vm._v(" "), _c('p', {
+    staticClass: "clear"
+  })], 2)], 1)], 1), _vm._v(" "), _c('div', {
+    staticClass: "context"
+  }, [_c('ul', {
+    staticClass: "book-box"
+  }, [_c('li', {
+    staticClass: "book-item"
+  }, [_c('div', [_c('img', {
+    attrs: {
+      "src": "",
+      "alt": ""
+    }
+  })])])], 1)], 1)])])
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -165,4 +285,4 @@ if (false) {
 
 /***/ })
 
-},[51]);
+},[49]);
