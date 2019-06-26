@@ -1,15 +1,15 @@
-const { tunnel } = require('../qcloud')
-const debug = require('debug')('koa-weapp-demo')
+const { tunnel } = require('../qcloud');
+const debug = require('debug')('koa-weapp-demo');
 
 /**
  * 这里实现一个简单的聊天室
  * userMap 为 tunnelId 和 用户信息的映射
  * 实际使用请使用数据库存储
  */
-const userMap = {}
+const userMap = {};
 
 // 保存 当前已连接的 WebSocket 信道ID列表
-const connectedTunnelIds = []
+const connectedTunnelIds = [];
 
 /**
  * 调用 tunnel.broadcast() 进行广播
@@ -35,7 +35,7 @@ const $broadcast = (type, content) => {
                 })
             }
         })
-}
+};
 
 /**
  * 调用 TunnelService.closeTunnel() 关闭信道
@@ -43,7 +43,7 @@ const $broadcast = (type, content) => {
  */
 const $close = (tunnelId) => {
     tunnel.closeTunnel(tunnelId)
-}
+};
 
 /**
  * 实现 onConnect 方法
@@ -85,7 +85,7 @@ function onMessage (tunnelId, type, content) {
             } else {
                 $close(tunnelId)
             }
-            break
+            break;
 
         default:
             break
@@ -98,18 +98,18 @@ function onMessage (tunnelId, type, content) {
  * 会调用该方法，此时可以进行清理及通知操作
  */
 function onClose (tunnelId) {
-    console.log(`[onClose] =>`, { tunnelId })
+    console.log(`[onClose] =>`, { tunnelId });
 
     if (!(tunnelId in userMap)) {
-        console.log(`[onClose][Invalid TunnelId]=>`, tunnelId)
-        $close(tunnelId)
+        console.log(`[onClose][Invalid TunnelId]=>`, tunnelId);
+        $close(tunnelId);
         return
     }
 
-    const leaveUser = userMap[tunnelId]
-    delete userMap[tunnelId]
+    const leaveUser = userMap[tunnelId];
+    delete userMap[tunnelId];
 
-    const index = connectedTunnelIds.indexOf(tunnelId)
+    const index = connectedTunnelIds.indexOf(tunnelId);
     if (~index) {
         connectedTunnelIds.splice(index, 1)
     }
@@ -126,29 +126,29 @@ function onClose (tunnelId) {
 module.exports = {
     // 小程序请求 websocket 地址
     get: async ctx => {
-        const data = await tunnel.getTunnelUrl(ctx.req)
-        const tunnelInfo = data.tunnel
+        const data = await tunnel.getTunnelUrl(ctx.req);
+        const tunnelInfo = data.tunnel;
 
-        userMap[tunnelInfo.tunnelId] = data.userinfo
+        userMap[tunnelInfo.tunnelId] = data.userinfo;
 
         ctx.state.data = tunnelInfo
     },
 
     // 信道将信息传输过来的时候
     post: async ctx => {
-        const packet = await tunnel.onTunnelMessage(ctx.request.body)
+        const packet = await tunnel.onTunnelMessage(ctx.request.body);
 
-        debug('Tunnel recive a package: %o', packet)
+        debug('Tunnel recive a package: %o', packet);
 
         switch (packet.type) {
             case 'connect':
-                onConnect(packet.tunnelId)
+                onConnect(packet.tunnelId);
                 break
             case 'message':
-                onMessage(packet.tunnelId, packet.content.messageType, packet.content.messageContent)
+                onMessage(packet.tunnelId, packet.content.messageType, packet.content.messageContent);
                 break
             case 'close':
-                onClose(packet.tunnelId)
+                onClose(packet.tunnelId);
                 break
         }
     }

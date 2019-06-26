@@ -199,8 +199,6 @@
               clear: both;
             }
           }
-
-
         }
       }
       .context{
@@ -211,11 +209,9 @@
             height: 200rpx;
             width: 100%;
             border: 1px solid #e4393c;
-
           }
         }
       }
     }
   }
-
 </style>

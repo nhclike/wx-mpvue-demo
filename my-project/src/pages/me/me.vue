@@ -11,11 +11,13 @@
       <YearProgress></YearProgress>
     </div>
     <button v-if='userinfo.openId' class="btn" @click="addBook">添加图书</button>
+    <button v-if='userinfo.openId' class="btn" @click="scanBook">扫一扫</button>
+
   </div>
 </template>
 
 <script>
-  import {get,showSuccess,showModal} from '@/util'
+  import {get,post,showSuccess,showModal} from '@/util'
   import YearProgress from '@/components/YearProgress'
   import qcloud from 'wafer2-client-sdk'
   import config from '@/config'
@@ -35,43 +37,52 @@
 
     },
     methods: {
-      addBook(){
-        wx.request({
+      async addBook(isbn){
+        /*wx.request({
           url: 'http://apis.juhe.cn/goodbook/query?catalog_id=242&pn=0&rn=1&dtype=&key=9a52a17273c6c1b42808f1cf847fdca6',
           success: function (res) {
             console.log(res);
             var data=res.data.result.data[0];
             showModal("添加图书",data.title+"添加成功");
           }
-        })
+        })*/
+        const res=await post('/weapp/addbook',{
+          isbn,
+          openid:this.userinfo.openId
+        });
+        console.log(res);
+        if(res.code==0&&res.data.title){
+          showSuccess('添加成功',`${res.data.title}添加成功`);
+        }
       },
       scanBook () {
         var _this=this;
         wx.scanCode({
           success (res) {
-            console.log(res)
-            _this.addBook();
+            console.log(res);
+            //res.result就是图书的isbn码
+            _this.addBook(res.result);
           }
         })
       },
       login () {
-        let user = wx.getStorageSync('userinfo')
-        var _this = this
+        let user = wx.getStorageSync('userinfo');
+        var _this = this;
         if (!user) {
           // 设置登录地址
-          qcloud.setLoginUrl(config.loginUrl)
+          qcloud.setLoginUrl(config.loginUrl);
           qcloud.login({
             success: function (userInfo) {
               qcloud.request({
                 url: config.userUrl,
                 login: true,
                 success (userRes) {
-                  showSuccess('获取用户信息成功')
+                  showSuccess('获取用户信息成功');
                   // 用户信息存储
-                  wx.setStorageSync('userInfo')
+                  wx.setStorageSync('userInfo');
                   _this.userinfo = userInfo
                 }
-              })
+              });
               console.log('登录成功', userInfo)
             },
             fail: function (err) {
@@ -81,7 +92,7 @@
         }
       },
       onShow () {
-        let userinfo = wx.getStorageSync('userinfo')
+        let userinfo = wx.getStorageSync('userinfo');
         if (userinfo) {
           this.userinfo = userinfo
         }
