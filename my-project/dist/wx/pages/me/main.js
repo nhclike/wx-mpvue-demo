@@ -157,11 +157,13 @@ if (false) {(function () {
               case 2:
                 res = _context.sent;
 
-                if (res.code == 0 && res.data.title) {
-                  Object(__WEBPACK_IMPORTED_MODULE_2__util__["b" /* showSuccess */])('添加成功', res.data.title + '\u6DFB\u52A0\u6210\u529F');
-                }
+                console.log(res);
+                // if(res.code==0&&res.data.title){
+                //   showSuccess('添加成功',`${res.data.title}添加成功`);
+                // }
+                Object(__WEBPACK_IMPORTED_MODULE_2__util__["b" /* showModal */])('添加成功', res.title + '\u6DFB\u52A0\u6210\u529F');
 
-              case 4:
+              case 5:
               case 'end':
                 return _context.stop();
             }
@@ -191,7 +193,7 @@ if (false) {(function () {
               url: __WEBPACK_IMPORTED_MODULE_5__config__["a" /* default */].userUrl,
               login: true,
               success: function success(userRes) {
-                Object(__WEBPACK_IMPORTED_MODULE_2__util__["b" /* showSuccess */])('获取用户信息成功');
+                Object(__WEBPACK_IMPORTED_MODULE_2__util__["c" /* showSuccess */])('获取用户信息成功');
                 // 用户信息存储
                 wx.setStorageSync('userInfo');
                 _this.userinfo = userInfo;
@@ -399,14 +401,6 @@ var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._sel
     staticClass: "btn",
     attrs: {
       "eventid": '2'
-    },
-    on: {
-      "click": _vm.addBook
-    }
-  }, [_vm._v("添加图书")]) : _vm._e(), _vm._v(" "), (_vm.userinfo.openId) ? _c('button', {
-    staticClass: "btn",
-    attrs: {
-      "eventid": '3'
     },
     on: {
       "click": _vm.scanBook

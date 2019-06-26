@@ -10,7 +10,7 @@
     <div>
       <YearProgress></YearProgress>
     </div>
-    <button v-if='userinfo.openId' class="btn" @click="addBook">添加图书</button>
+    <!--<button v-if='userinfo.openId' class="btn" @click="addBook">添加图书</button>-->
     <button v-if='userinfo.openId' class="btn" @click="scanBook">扫一扫</button>
 
   </div>
@@ -50,10 +50,12 @@
           isbn,
           openid:this.userinfo.openId
         });
+        console.log("/weapp/addbook的返回值");
         console.log(res);
-        if(res.code==0&&res.data.title){
-          showSuccess('添加成功',`${res.data.title}添加成功`);
-        }
+        // if(res.code==0&&res.data.title){
+        //   showSuccess('添加成功',`${res.data.title}添加成功`);
+        // }
+        showModal('添加成功',`${res.title}添加成功`);
       },
       scanBook () {
         var _this=this;
