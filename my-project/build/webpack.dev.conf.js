@@ -1,17 +1,17 @@
-var utils = require('./utils')
-var webpack = require('webpack')
-var config = require('../config')
-var merge = require('webpack-merge')
-var baseWebpackConfig = require('./webpack.base.conf')
+var utils = require('./utils');
+var webpack = require('webpack');
+var config = require('../config');
+var merge = require('webpack-merge');
+var baseWebpackConfig = require('./webpack.base.conf');
 // var HtmlWebpackPlugin = require('html-webpack-plugin')
-var FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
-var MpvueVendorPlugin = require('webpack-mpvue-vendor-plugin')
+var FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin');
+var MpvueVendorPlugin = require('webpack-mpvue-vendor-plugin');
 
 // copy from ./webpack.prod.conf.js
-var path = require('path')
-var ExtractTextPlugin = require('extract-text-webpack-plugin')
-var CopyWebpackPlugin = require('copy-webpack-plugin')
-var OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
+var path = require('path');
+var ExtractTextPlugin = require('extract-text-webpack-plugin');
+var CopyWebpackPlugin = require('copy-webpack-plugin');
+var OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin');
 
 // add hot-reload related code to entry chunks
 // Object.keys(baseWebpackConfig.entry).forEach(function (name) {
@@ -82,4 +82,4 @@ module.exports = merge(baseWebpackConfig, {
     // }),
     new FriendlyErrorsPlugin()
   ]
-})
+});

@@ -1,15 +1,15 @@
-var path = require('path')
-var utils = require('./utils')
-var webpack = require('webpack')
-var config = require('../config')
-var merge = require('webpack-merge')
-var baseWebpackConfig = require('./webpack.base.conf')
-var UglifyJsPlugin = require('uglifyjs-webpack-plugin')
-var CopyWebpackPlugin = require('copy-webpack-plugin')
+var path = require('path');
+var utils = require('./utils');
+var webpack = require('webpack');
+var config = require('../config');
+var merge = require('webpack-merge');
+var baseWebpackConfig = require('./webpack.base.conf');
+var UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+var CopyWebpackPlugin = require('copy-webpack-plugin');
 // var HtmlWebpackPlugin = require('html-webpack-plugin')
-var ExtractTextPlugin = require('extract-text-webpack-plugin')
-var OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
-var MpvueVendorPlugin = require('webpack-mpvue-vendor-plugin')
+var ExtractTextPlugin = require('extract-text-webpack-plugin');
+var OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin');
+var MpvueVendorPlugin = require('webpack-mpvue-vendor-plugin');
 var env = config.build.env
 
 var webpackConfig = merge(baseWebpackConfig, {
@@ -85,7 +85,7 @@ var webpackConfig = merge(baseWebpackConfig, {
       platform: process.env.PLATFORM
     })
   ]
-})
+});
 
 // if (config.build.productionGzip) {
 //   var CompressionWebpackPlugin = require('compression-webpack-plugin')
@@ -106,15 +106,15 @@ var webpackConfig = merge(baseWebpackConfig, {
 // }
 
 if (config.build.bundleAnalyzerReport) {
-  var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+  var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
   webpackConfig.plugins.push(new BundleAnalyzerPlugin())
 }
 
-var useUglifyJs = process.env.PLATFORM !== 'swan'
+var useUglifyJs = process.env.PLATFORM !== 'swan';
 if (useUglifyJs) {
   webpackConfig.plugins.push(new UglifyJsPlugin({
     sourceMap: true
   }))
 }
 
-module.exports = webpackConfig
+module.exports = webpackConfig;

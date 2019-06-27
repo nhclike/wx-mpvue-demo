@@ -1,5 +1,5 @@
 // see http://vuejs-templates.github.io/webpack for documentation.
-var path = require('path')
+var path = require('path');
 var fileExtConfig = {
     swan: {
         template: 'swan',
@@ -25,8 +25,8 @@ var fileExtConfig = {
         style: 'acss',
         platform: 'my'
     }
-}
-var fileExt = fileExtConfig[process.env.PLATFORM]
+};
+var fileExt = fileExtConfig[process.env.PLATFORM];
 
 module.exports = {
   build: {
@@ -65,4 +65,4 @@ module.exports = {
     cssSourceMap: false,
     fileExt: fileExt
   }
-}
+};

@@ -1,5 +1,5 @@
 const https = require('https');
-const {mysql} = require('../qcloud');
+const { mysql } = require('../qcloud');
 //1新增图书
 //2获取豆瓣信息
 //3入库
@@ -7,7 +7,7 @@ const {mysql} = require('../qcloud');
 //https://douban.uieee.com/v2/book/isbn/9787111128069
 module.exports = async (ctx)=>{
   const {isbn,openid} = ctx.request.body;
-  console.log('添加图书',isbn,openid)
+  console.log('添加图书',isbn,openid);
 
   if(isbn && openid){
     //查询要添加的书是否存在，存在直接提示

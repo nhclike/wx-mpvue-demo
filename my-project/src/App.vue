@@ -47,7 +47,9 @@ export default {
   -webkit-transition: width 2s;
   -o-transition: width 2s;
 }
-
+.text-primary{
+  color:#EA5149;
+}
 .btn{
   color:white;
   background:#EA5A49;
