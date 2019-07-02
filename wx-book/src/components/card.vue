@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <a :href="detailUrl">
     <div class="book-card">
       <div class="thumb" >
         <img :src="book.image"
@@ -36,7 +36,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </a>
 </template>
 
 <script>
@@ -50,6 +50,11 @@
     },
     components:{
       Rate
+    },
+    computed:{
+      detailUrl(){
+        return '/pages/detail/main?id='+this.book.id
+      }
     },
     methods:{
       preview(){

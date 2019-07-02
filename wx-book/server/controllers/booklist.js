@@ -2,7 +2,7 @@ const { mysql } =require("../qcloud");
 
 module.exports =async(ctx)=>{
   const {page} = ctx.request.query;
-  const size = 5;
+  const size = 10;
   const books= await mysql("books")
      .select('books.*','csessioninfo.user_info')
     .join("csessioninfo",'books.openid','csessioninfo.open_id')
@@ -12,10 +12,11 @@ module.exports =async(ctx)=>{
   console.log(books);
   ctx.state.data={
     list:books.map(v=>{
-      const info = JSON.parse(v.user_info)
+      const info = JSON.parse(v.user_info);
+      let nickName=info.nickName || "未知"
       return Object.assign({},v,{
         user_info:{
-          nickName:info.nickName
+          nickName:nickName
         }
       })
     })
