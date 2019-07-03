@@ -1,5 +1,6 @@
 <template>
   <div>
+    <TopSwiper :tops="tops"></TopSwiper>
     <Card :key="item.id" v-for="(item,index) in books" :book="item"></Card>
     <p class='text-footer' v-if='!more'>
       没有更多数据
@@ -19,19 +20,24 @@
   // 2. page>0 数据长度<10 停止触底加载
   import {get} from "@/util"
   import Card from "@/components/card"
+  import TopSwiper from "@/components/TopSwiper"
   export default {
     data() {
       return {
         books: [],
         page: 0,
-        more: true
+        more: true,
+        tops:[]
       }
     },
     components: {
-      Card
+      Card,
+      TopSwiper
     },
     mounted() {
       this.getList(true);
+      this.getTop()
+
     },
     methods: {
       async getList(init) {
@@ -55,12 +61,18 @@
         }
 
         wx.hideNavigationBarLoading()
+      },
+      async getTop(){
+        const tops = await get('/weapp/top');
+        this.tops = tops.list
       }
     },
     //监听用户下拉动作
     onPullDownRefresh() {
       console.log("用户下拉刷新");
       this.getList(true);
+      this.getTop()
+
     },
     onReachBottom() {
       console.log("滚动到底部了");
@@ -70,6 +82,7 @@
       }
       this.page = this.page + 1;
       this.getList()
+      this.getTop()
     }
   }
 

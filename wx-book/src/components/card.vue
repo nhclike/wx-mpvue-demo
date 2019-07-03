@@ -1,7 +1,7 @@
 <template>
   <a :href="detailUrl">
     <div class="book-card">
-      <div class="thumb" >
+      <div class="thumb" @click.stop="preview">
         <img :src="book.image"
              class="img"
              mode="aspectFill"
