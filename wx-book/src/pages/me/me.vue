@@ -81,11 +81,16 @@
                 success (userRes) {
                   showSuccess('获取用户信息成功');
                   // 用户信息存储
-                  wx.setStorageSync('userInfo');
-                  _this.userinfo = userInfo
+                  try{
+                    wx.setStorageSync('userInfo',userInfo);
+                  }catch (e){
+                    console.log(e)
+                  }
+                  _this.userinfo = userInfo;
+                  console.log('登录成功', userInfo)
+
                 }
               });
-              console.log('登录成功', userInfo)
             },
             fail: function (err) {
               console.log('登录失败', err)

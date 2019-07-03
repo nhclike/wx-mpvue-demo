@@ -47,10 +47,10 @@
         }
         wx.showNavigationBarLoading();
         const books = await get("/weapp/booklist", {page: this.page});
-        console.log(books);
+        //console.log(books);
         if (books.list.length < 10 && this.page > 0) {
           this.more = false;
-          console.log(this.more)
+          //console.log(this.more)
         }
         if (init) {
           this.books = books.list;
@@ -81,7 +81,7 @@
         return false
       }
       this.page = this.page + 1;
-      this.getList()
+      this.getList();
       this.getTop()
     }
   }

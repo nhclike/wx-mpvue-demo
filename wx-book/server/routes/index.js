@@ -42,6 +42,7 @@ router.get('/booklist',controllers.booklist);
 //图书详情
 router.get('/bookdetail',controllers.bookdetail);
 //拿到轮播图数据
-router.get('/top', controllers.top)
-
+router.get('/top', controllers.top);
+//增加评论
+router.get('/addcomment', controllers.addcomment);
 module.exports = router;
