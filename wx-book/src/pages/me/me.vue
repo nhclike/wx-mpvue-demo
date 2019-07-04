@@ -68,7 +68,7 @@
         })
       },
       login () {
-        let user = wx.getStorageSync('userinfo');
+        let user = wx.getStorageSync('userInfo');
         var _this = this;
         if (!user) {
           // 设置登录地址
@@ -82,12 +82,12 @@
                   showSuccess('获取用户信息成功');
                   // 用户信息存储
                   try{
-                    wx.setStorageSync('userInfo',userInfo);
+                    wx.setStorageSync('userInfo',userRes.data.data);
                   }catch (e){
                     console.log(e)
                   }
-                  _this.userinfo = userInfo;
-                  console.log('登录成功', userInfo)
+                  _this.userinfo = userRes.data.data;
+                  console.log('登录成功', _this.userinfo)
 
                 }
               });
@@ -99,7 +99,7 @@
         }
       },
       onShow () {
-        let userinfo = wx.getStorageSync('userinfo');
+        let userinfo = wx.getStorageSync('userInfo');
         if (userinfo) {
           this.userinfo = userinfo
         }

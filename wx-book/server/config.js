@@ -1,4 +1,5 @@
 const CONF = {
+    //本地开发测试环境
     serverHost: 'localhost',
     tunnelServerUrl: '',
     tunnelSignatureKey: '27fb7d1c161b7ca52d73cce0f1d833f9f5b5ec89',
@@ -8,6 +9,8 @@ const CONF = {
     qcloudSecretKey: 'Qipneb5PXaTUPC3nMl4YyEIerupW1QSM',
     wxMessageToken: 'weixinmsgtoken',
     networkTimeout: 30000,
+
+
     port: '5757',
     rootPathname: '',
 
@@ -30,7 +33,7 @@ const CONF = {
         port: 3307,
         user: 'root',
         db: 'cAuth',
-        //pass: 'wx1405665086f351cb',
+      //pass: 'wx1405665086f351cb',  //腾讯云部署时数据库密码为微信小程序appid
       pass: '123456',
 
       char: 'utf8mb4'
