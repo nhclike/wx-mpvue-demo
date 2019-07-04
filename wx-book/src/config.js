@@ -1,7 +1,7 @@
 // 配置项
 
-const host = 'http://localhost:5757';
-//const host = 'https://elwcli6u.qcloud.la';
+//const host = 'http://localhost:5757';
+const host = 'https://elwcli6u.qcloud.la';
 
 const config = {
   host,

@@ -1,14 +1,15 @@
 const CONF = {
     //本地开发测试环境
-    serverHost: 'localhost',
-    tunnelServerUrl: '',
-    tunnelSignatureKey: '27fb7d1c161b7ca52d73cce0f1d833f9f5b5ec89',
-    // 腾讯云相关配置可以查看云 API 秘钥控制台：https://console.cloud.tencent.com/capi
+    // serverHost: 'localhost',
+    // tunnelServerUrl: '',
+    // tunnelSignatureKey: '27fb7d1c161b7ca52d73cce0f1d833f9f5b5ec89',
+    // // 腾讯云相关配置可以查看云 API 秘钥控制台：https://console.cloud.tencent.com/capi
+    //新版腾讯云开发环境中不再自动填入qcloud信息，改为腾讯云开发环境时需要手动添加下面三个配置
     qcloudAppId: '1259052527',
     qcloudSecretId: 'AKIDb1GNOHSHEAytMvvAePyAJKSSht0vqM0T',
     qcloudSecretKey: 'Qipneb5PXaTUPC3nMl4YyEIerupW1QSM',
-    wxMessageToken: 'weixinmsgtoken',
-    networkTimeout: 30000,
+    // wxMessageToken: 'weixinmsgtoken',
+    // networkTimeout: 30000,
 
 
     port: '5757',
@@ -30,11 +31,11 @@ const CONF = {
      */
     mysql: {
         host: 'localhost',
-        port: 3307,
+        port: 3306,
         user: 'root',
         db: 'cAuth',
-      //pass: 'wx1405665086f351cb',  //腾讯云部署时数据库密码为微信小程序appid
-      pass: '123456',
+      pass: 'wx1405665086f351cb',  //腾讯云部署时数据库密码为微信小程序appid
+      //pass: '123456',
 
       char: 'utf8mb4'
     },

@@ -5,3 +5,34 @@
 
 3 改变页面前台代码后需要在my-project目录下执行
   npm run dev   ----重新编译打包生成weex文件
+
+4 本地开发环境和腾讯云开发环境切换
+  1 修改src/config.js中
+    const host = 'https://elwcli6u.qcloud.la';   //此地址对应开发者工具中详情=》腾讯云状态=》开发环境request域名
+  2 修改server/config.js中
+     mysql{
+      port:3306,   //一般不需要改，因为我本地mysql服务是3307所以需要改回默认的3306
+      pass: 'wx1405665086f351cb',  //腾讯云部署时数据库密码为微信小程序appid
+     }
+
+
+    //本地开发测试环境
+    // serverHost: 'localhost',
+    // tunnelServerUrl: '',
+    // tunnelSignatureKey: '27fb7d1c161b7ca52d73cce0f1d833f9f5b5ec89',
+    // // 腾讯云相关配置可以查看云 API 秘钥控制台：https://console.cloud.tencent.com/capi
+    //新版腾讯云开发环境中不再自动填入qcloud信息，改为腾讯云开发环境时需要手动添加下面三个配置
+    qcloudAppId: '1259052527',
+    qcloudSecretId: 'AKIDb1GNOHSHEAytMvvAePyAJKSSht0vqM0T',
+    qcloudSecretKey: 'Qipneb5PXaTUPC3nMl4YyEIerupW1QSM',
+    // wxMessageToken: 'weixinmsgtoken',
+    // networkTimeout: 30000,
+
+
+    详情见：https://github.com/tencentyun/wafer2-quickstart/issues/13
+
+
+5本地开发无法进行真机调试
+  部署到腾讯云开发环境可以真机调试
+
+

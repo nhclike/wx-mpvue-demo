@@ -97,9 +97,13 @@
             }
           })
         }
+        else {
+          this.userinfo=user;
+        }
       },
       onShow () {
         let userinfo = wx.getStorageSync('userInfo');
+        console.log("onShow",userinfo);
         if (userinfo) {
           this.userinfo = userinfo
         }
