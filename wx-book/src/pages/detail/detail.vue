@@ -1,25 +1,29 @@
 <template>
   <div>
     <BookInfo :info="info"></BookInfo>
-    <div class="comment">
+    <CommentList :comments="comments"></CommentList>
+    <div class="comment" v-if="showAdd">
        <textarea v-model='comment'
                  class='textarea'
                  :maxlength='100'
                  placeholder='请输入图书短评'></textarea>
+      <div class='location'>
+        地理位置：
+        <switch color='#EA5A49' :checked='location' @change='getGeo'></switch>
+        <span class='text-primary'>{{location}}</span>
+      </div>
+      <div class='phone'>
+        手机型号：
+        <switch color='#EA5A49' :checked='phone' @change='getPhone'></switch>
+        <span class='text-primary'>{{phone}}</span>
+      </div>
+      <button class="btn" @click='addComment' :disabled="!comment">
+        评论
+      </button>
     </div>
-    <div class='location'>
-      地理位置：
-      <switch color='#EA5A49' :checked='location' @change='getGeo'></switch>
-      <span class='text-primary'>{{location}}</span>
+    <div v-else class="text-footer">
+      未登录或者已经评论过了
     </div>
-    <div class='phone'>
-      手机型号：
-      <switch color='#EA5A49' :checked='phone' @change='getPhone'></switch>
-      <span class='text-primary'>{{phone}}</span>
-    </div>
-    <button class="btn" @click='addComment'>
-      评论
-    </button>
     <button open-type='share' class="btn">转发给好友</button>
 
   </div>
@@ -29,9 +33,11 @@
 <script>
     import {get,post,showModal} from "@/util"
     import BookInfo from "@/components/BookInfo"
+    import CommentList from "@/components/CommentList"
     export default {
       data(){
         return {
+          comments: [],
           bookid:'',
           info:{},
           location:'',
@@ -41,7 +47,22 @@
         }
       },
       components:{
-        BookInfo
+        BookInfo,
+        CommentList
+      },
+      computed:{
+        showAdd(){
+          // 没登录
+          if (!this.userinfo.openId) {
+            return false
+          }
+          // 评论页面里查到有自己的openid
+          if (this.comments.filter(v => v.openid === this.userinfo.openId).length) {
+            return false
+          }
+          return true
+        }
+
       },
       methods:{
         async getDetail(){
@@ -85,6 +106,11 @@
             this.location = ''
           }
         },
+        async getComments () {
+          const comments = await get('/weapp/commentlist', {bookid: this.bookid});
+          console.log('comments', comments);
+          this.comments = comments.list || []
+        },
         getPhone(e){
           console.log('手机型号获取种');
           console.log(e);
@@ -99,6 +125,7 @@
         },
         async addComment(){
           if(!this.comment){
+
             return
           }
           // 评论内容 手机型号  地理位置 图书id 用户的openid
@@ -112,6 +139,7 @@
           try {
             await post('/weapp/addcomment', data);
             this.comment = '';
+            this.getComments();
           } catch (e) {
             showModal('失败', e.msg)
           }
@@ -119,7 +147,10 @@
       },
       mounted(){
           this.bookid=this.$root.$mp.query.id;
+          this.location="";
+          this.phone="";
           this.getDetail();
+          this.getComments();
           try {
             var value = wx.getStorageSync('userInfo');
             if (value) {

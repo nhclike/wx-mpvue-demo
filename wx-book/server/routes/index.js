@@ -44,5 +44,7 @@ router.get('/bookdetail',controllers.bookdetail);
 //拿到轮播图数据
 router.get('/top', controllers.top);
 //增加评论
-router.get('/addcomment', controllers.addcomment);
+router.post('/addcomment', controllers.addcomment);
+//获取评论列表
+router.get('/commentlist', controllers.commentlist);
 module.exports = router;
