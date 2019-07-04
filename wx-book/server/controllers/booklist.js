@@ -4,8 +4,8 @@ module.exports =async(ctx)=>{
   const {page,openid} = ctx.request.query;
   const size = 10;
   const mysqlSelect=  mysql("books")
-     .select('books.*','csessioninfo.user_info')
-    .join("csessioninfo",'books.openid','csessioninfo.open_id')
+     .select('books.*','cSessionInfo.user_info')
+    .join("cSessionInfo",'books.openid','cSessionInfo.open_id')
     .orderBy('books.id','desc')
   let books;
   if(openid){
